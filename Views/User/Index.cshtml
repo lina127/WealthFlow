@@ -40,14 +40,16 @@
                 url: "User/IsUserValid",
                 data: data,
                 success: function (response) {
-                    console.log(response);
+                    if (response == true) {
+                        window.location.href = "/Dashboard";
+                    }
                 },
                 failure: function (response) {
                     alert(response.d);
                 }
             });
         });
-        
+
     });
 </script>
 

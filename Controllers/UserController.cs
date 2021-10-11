@@ -18,6 +18,12 @@ namespace WealthFlow
         {
             return View();
         }
+
+        public IActionResult MyAccount()
+        {
+            return View();
+        }
+
         [HttpPost]
         public bool IsUserValid(string email, string password)
         {
