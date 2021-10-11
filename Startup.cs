@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +25,7 @@ namespace WealthFlow
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            services.AddDbContext<WealthFlow.WealthflowContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyDbContextConnectionString")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +51,9 @@ namespace WealthFlow
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=User}/{action=Index}/{id?}");
             });
         }
     }
