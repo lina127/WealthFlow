@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WealthFlow", "WealthFlow.csproj", "{D57438D8-0A23-4A5A-B33E-BD57DCC363EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D57438D8-0A23-4A5A-B33E-BD57DCC363EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D57438D8-0A23-4A5A-B33E-BD57DCC363EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D57438D8-0A23-4A5A-B33E-BD57DCC363EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D57438D8-0A23-4A5A-B33E-BD57DCC363EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2F7739FA-D1B1-4CCE-AC0D-7CDF093DEAA6}
+	EndGlobalSection
+EndGlobal
