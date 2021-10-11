@@ -1,7 +1,53 @@
-﻿
-@{
-    ViewData["Title"] = "Index";
+﻿@{
+    Layout = "../Shared/_Layout";
 }
 
-<h1>Index</h1>
+@{
+    ViewData["Title"] = "Login";
+}
+<div class="row">
+    <div class="col">
+        <h1 class="text-center mt-5">Login</h1>
+        <div class="d-flex justify-content-center">
+
+                <form class="col-6">
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Password">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="submitForm">Submit</button>
+                </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $("document").ready(function () {
+        $("#submitForm").click(function (e) {
+            e.preventDefault();
+
+            let email = $("#email").val();
+            let password = $("#password").val();
+            let data = { email: email, password: password };
+
+            $.ajax({
+                type: "POST",
+                url: "User/IsUserValid",
+                data: data,
+                success: function (response) {
+                    console.log(response);
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+        
+    });
+</script>
 
