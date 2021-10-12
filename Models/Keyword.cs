@@ -9,7 +9,9 @@ namespace WealthFlow
     public partial class Keyword
     {
         public int KeywordId { get; set; }
-        public string Keyword1 { get; set; }
+        public string Name { get; set; }
         public int CategoryId { get; set; }
+
+        public virtual Category Category { get; set; }
     }
 }
