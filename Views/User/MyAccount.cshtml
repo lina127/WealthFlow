@@ -1,5 +1,141 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "../Shared/_Layout";
+    ViewData["Title"] = "My Account";
 }
+
+@model WealthFlow.User
+
+
+<div class="row">
+    <div class="col-6">
+        <h1>@ViewData["Title"]</h1>
+        <div class="d-flex">
+            <form class="col-12">
+                <div class="form-group">
+                    <label for="newEmail">Email address</label>
+                    <input type="text" class="form-control" id="newEmail" aria-describedby="emailHelp" value="@Model.Email">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Password</label>
+                    <input type="password" class="form-control" id="newPassword">
+                </div>
+                <button type="button" class="btn btn-primary" id="updateAccount">Update Account</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="row">
+            <div class="col-9">
+                <h1>Card Management</h1>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-primary" id="showNewCardFormContainer">New Card</button>
+            </div>
+            <div class="col-12" id="newCardFormContainer">
+                <form>
+                    <div class="form-group">
+                        <label for="cardNum">Card Number</label>
+                        <input type="text" class="form-control" id="cardNum" />
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select class="form-control" id="type">
+                            <option disabled selected>-------------</option>
+                            <option value="Debit">Debit</option>
+                            <option value="Credit">Credit</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="addCard">Add Card</button>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $("document").ready(function () {
+        $("#newCardFormContainer").hide();
+
+        $("#updateAccount").click(function (e) {
+            e.preventDefault();
+
+            let newEmail = $("#newEmail").val();
+            let newPassword = $("#newPassword").val();
+
+            if (newEmail == "" || newPassword == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { email: newEmail, password: newPassword };
+
+            $.ajax({
+                type: "POST",
+                url: "UpdateAccount",
+                data: data,
+                success: function (response) {
+                    if (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Your account has been updated.'
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No changes were made.'
+                        })
+                    }
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+        $("#showNewCardFormContainer").click(function (e) {
+            e.preventDefault();
+            $("#newCardFormContainer").show();
+        });
+
+        $("#addCard").click(function (e) {
+            e.preventDefault();
+            let cardNum = $("#cardNum").val();
+            let type = $("#type").val();
+
+            if (cardNum == "" || type == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { cardNum: cardNum, type: type };
+
+            $.ajax({
+                type: "POST",
+                url: "AddNewCard",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Your account has been updated.'
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+    });
+</script>
