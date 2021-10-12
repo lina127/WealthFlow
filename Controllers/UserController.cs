@@ -24,7 +24,9 @@ namespace WealthFlow
         {
             if (IsSessionValid(out User user))
             {
-                return View(user);
+                List<Card> cards = _dbContext.Card.ToList();
+                DataDTO dataDTO = new DataDTO(user, cards);
+                return View(dataDTO);
             }
             return RedirectToAction("Index");
             
