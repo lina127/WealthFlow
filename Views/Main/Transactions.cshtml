@@ -3,33 +3,55 @@
     ViewData["Title"] = "Transactions";
 }
 
-@model IEnumerable<WealthFlow.Transaction>
+@model WealthFlow.DataDTO
 
-<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-6">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+    <div class="col-6">
+        <form>
+            <div class="form-group">
+                <label for="type">Card #</label>
+                <select class="form-control" id="type">
+                    <option disabled selected>-------------</option>
+                    @foreach (var i in Model.Cards)
+                    {
+                        <option value="@i.CardId">@i.CardNum</option>
+                    }
+
+                </select>
+            </div>
+        </form>
+        <input type="file" id="csvFile" />
+        <button class="btn btn-primary" id="uploadCSV">Upload CSV</button>
+    </div>
+</div>
+
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(o => o.Date)
+                @Html.DisplayNameFor(o => o.Transactions[0].Date)
             </th>
             <th>
-                @Html.DisplayNameFor(o => o.Merchant)
+                @Html.DisplayNameFor(o => o.Transactions[0].Merchant)
             </th>
             <th>
-                @Html.DisplayNameFor(o => o.Amount)
+                @Html.DisplayNameFor(o => o.Transactions[0].Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(o => o.Category.Name)
+                @Html.DisplayNameFor(o => o.Transactions[0].Category.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(o => o.Note)
+                @Html.DisplayNameFor(o => o.Transactions[0].Note)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Transactions)
         {
         <tr id="@item.CategoryId">
             <td>
@@ -48,3 +70,33 @@
         }
     </tbody>
 </table>
+<div class="csv"></div>
+<script type="text/javascript">
+    $("document").ready(function () {
+        $("#csvFile").hide();
+
+        $("#uploadCSV").click(function (e) {
+            e.preventDefault();
+            $("#csvFile").click();
+        });
+
+        $("#csvFile").change(function (e) {
+            var ext = $("#csvFile").val().split(".").pop().toLowerCase();
+
+            if ($.inArray(ext, ["csv"]) == -1) {
+                alert('Upload CSV');
+                return false;
+            }
+
+            if (e.target.files != undefined) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    csvResult = e.target.result.split(/\r|\n|\r\n/);
+                    $('.csv').append(csvResult);
+                }
+                reader.readAsText(e.target.files.item(0));
+            }
+        });
+
+    });
+</script> 

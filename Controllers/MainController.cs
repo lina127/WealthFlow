@@ -6,19 +6,26 @@ using System.Threading.Tasks;
 
 namespace WealthFlow.Controllers
 {
-    public class MainController : Controller
+    public class MainController : BaseController
     {
         private WealthflowContext _dbContext;
-        public MainController(WealthflowContext context)
+        public MainController(WealthflowContext context) : base(context)
         {
             _dbContext = context;
         }
 
-        public IActionResult Transactions()
+        public IActionResult Transactions() 
         {
-            //User user = GetCurrentUser();
-            //List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == )
-            return View();
+            if (IsSessionValid(out User? user))
+            {
+                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
+                
+                List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
+
+                DataDTO dataDTO = new(user, cards, transactions);
+                return View(dataDTO);
+            }
+            return RedirectToAction("Index", "User");
         }
 
         public IActionResult Category()
