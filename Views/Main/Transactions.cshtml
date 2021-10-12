@@ -2,4 +2,49 @@
     Layout = "../Shared/_Layout";
     ViewData["Title"] = "Transactions";
 }
+
 @model IEnumerable<WealthFlow.Transaction>
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(o => o.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(o => o.Merchant)
+            </th>
+            <th>
+                @Html.DisplayNameFor(o => o.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(o => o.Category.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(o => o.Note)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr id="@item.CategoryId">
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+
+            <td>
+                <button class="btn btn-primary renameCategory">Rename</button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

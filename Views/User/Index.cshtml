@@ -42,6 +42,12 @@
                 success: function (response) {
                     if (response == true) {
                         window.location.href = "/Dashboard";
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Invalid credential.'
+                        });
                     }
                 },
                 failure: function (response) {

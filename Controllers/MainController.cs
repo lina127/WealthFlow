@@ -16,6 +16,8 @@ namespace WealthFlow.Controllers
 
         public IActionResult Transactions()
         {
+            //User user = GetCurrentUser();
+            //List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == )
             return View();
         }
 
