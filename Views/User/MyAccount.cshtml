@@ -70,7 +70,7 @@
                     <tbody>
                         @foreach (var item in Model.Cards)
                         {
-                        <tr class="table-warning">
+                        <tr class="table-warning" id="@item.CardId">
                             <td>@item.CardNum </td>
                             <td>@item.Type</td>
                             <td>@item.Bank</td>
@@ -181,7 +181,25 @@
 
         $(".delete").click(function (e) {
             e.preventDefault();
-            
-        }
+            let cardId = $(this)[0].parentNode.parentNode.parentNode.id;
+
+            $.ajax({
+                type: "POST",
+                url: "DeleteCard",
+                data: {cardId : cardId},
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Deleted successfully'
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
     });
 </script>
