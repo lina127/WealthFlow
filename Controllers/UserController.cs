@@ -83,12 +83,13 @@ namespace WealthFlow.Controllers
         }
 
         [HttpPost]
-        public void AddNewCard(int cardNum, string type)
+        public void AddNewCard(string cardNum, string type, string bank)
         {
             User user = GetCurrentUser();
             Card card = new Card();
             card.CardNum = cardNum;
             card.Type = type;
+            card.Bank = bank;
             card.UserId = user.UserId;
             _dbContext.Card.Add(card);
             _dbContext.SaveChanges();
