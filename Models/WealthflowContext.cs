@@ -34,13 +34,19 @@ namespace WealthFlow
 
                 entity.Property(e => e.CardId).HasColumnName("cardId");
 
+                entity.Property(e => e.Bank)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("bank");
+
                 entity.Property(e => e.CardNum).HasColumnName("cardNum");
 
                 entity.Property(e => e.Type)
                     .IsRequired()
                     .HasMaxLength(20)
-                    .HasColumnName("type")
-                    .IsFixedLength(true);
+                    .IsUnicode(false)
+                    .HasColumnName("type");
 
                 entity.Property(e => e.UserId).HasColumnName("userId");
 
@@ -59,9 +65,9 @@ namespace WealthFlow
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnName("name")
-                    .IsFixedLength(true);
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
             });
 
             modelBuilder.Entity<Keyword>(entity =>
@@ -74,9 +80,9 @@ namespace WealthFlow
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(30)
-                    .HasColumnName("name")
-                    .IsFixedLength(true);
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
 
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Keyword)
@@ -106,8 +112,13 @@ namespace WealthFlow
                 entity.Property(e => e.Merchant)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .HasColumnName("merchant")
-                    .IsFixedLength(true);
+                    .IsUnicode(false)
+                    .HasColumnName("merchant");
+
+                entity.Property(e => e.Note)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("note");
 
                 entity.HasOne(d => d.Card)
                     .WithMany(p => p.Transaction)
@@ -132,14 +143,13 @@ namespace WealthFlow
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("email")
-                    .IsFixedLength(true);
+                    .HasColumnName("email");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasMaxLength(30)
-                    .HasColumnName("password")
-                    .IsFixedLength(true);
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("password");
             });
 
             OnModelCreatingPartial(modelBuilder);
