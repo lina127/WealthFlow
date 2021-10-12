@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace WealthFlow.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private WealthflowContext _dbContext;
-        public UserController(WealthflowContext context)
+        public UserController(WealthflowContext context) : base(context)
         {
             _dbContext = context;
         }
@@ -25,30 +25,11 @@ namespace WealthFlow.Controllers
             if (IsSessionValid(out User user))
             {
                 List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
-                DataDTO dataDTO = new DataDTO(user, cards);
+                DataDTO dataDTO = new DataDTO(user, cards, null);
                 return View(dataDTO);
             }
             return RedirectToAction("Index");
             
-        }
-
-        public User GetCurrentUser()
-        {
-            string email = HttpContext.Session.GetString("CurrentUserEmail");
-            User user = _dbContext.User.Where(o => o.Email == email).FirstOrDefault();
-            return user;
-        }
-
-        public bool IsSessionValid(out User user)
-        {
-            string email = HttpContext.Session.GetString("CurrentUserEmail");
-
-            user = _dbContext.User.Where(o => o.Email == email).FirstOrDefault();
-            if (user == null)
-            {
-                return false;
-            }
-            return true;
         }
 
         [HttpPost]
@@ -57,7 +38,7 @@ namespace WealthFlow.Controllers
             User result = _dbContext.User.Where(o => o.Email == email && o.Password == password).FirstOrDefault();
             if (result != null)
             {
-                HttpContext.Session.SetString("CurrentUserEmail", email);
+                SetUserIdSession(result);
                 return true;
             }
             return false;
@@ -68,8 +49,8 @@ namespace WealthFlow.Controllers
         {
             email = email.Trim();
             password = password.Trim();
-            string oldEmail = HttpContext.Session.GetString("CurrentUserEmail");
-            
+            string oldEmail = GetCurrentUser().Email;
+
             User user = _dbContext.User.Where(o => o.Email == oldEmail).FirstOrDefault();
 
             if(user.Email.Trim() == email && user.Password.Trim() == password)
