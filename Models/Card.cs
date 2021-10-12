@@ -14,7 +14,7 @@ namespace WealthFlow
         }
 
         public int CardId { get; set; }
-        public int CardNum { get; set; }
+        public string CardNum { get; set; }
         public string Type { get; set; }
         public int UserId { get; set; }
         public string Bank { get; set; }
