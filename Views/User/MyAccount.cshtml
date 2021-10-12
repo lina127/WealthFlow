@@ -43,6 +43,16 @@
                             <option value="Debit">Debit</option>
                             <option value="Credit">Credit</option>
                         </select>
+
+                        <label for="bank" class="mt-2">Bank Name</label>
+                        <select class="form-control" id="bank">
+                            <option disabled selected>-------------</option>
+                            <option value="td">Toronto-Dominion Bank (TD)</option>
+                            <option value="cibc">Canadian Imperial Bank of Commerce (CIBC)</option>
+                            <option value="bmo">Bank of Montreal (BMO)</option>
+                            <option value="scotia">Bank of Nova Scotia (Scotiabank)</option>
+                            <option value="rbc">Royal Bank of Canada (RBC)</option>
+                        </select>
                     </div>
                     <button type="button" class="btn btn-primary" id="addCard">Add Card</button>
                 </form>
@@ -53,6 +63,7 @@
                         <tr>
                             <th>Card Number</th>
                             <th>Type</th>
+                            <th>Bank</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,6 +72,7 @@
                             <tr class="table-warning">
                                 <td>@item.CardNum </td>
                                 <td>@item.Type</td>
+                                <td>@item.Bank</td>
                             </tr>
                         }
                     </tbody>
