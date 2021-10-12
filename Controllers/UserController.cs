@@ -75,5 +75,13 @@ namespace WealthFlow.Controllers
             _dbContext.Card.Add(card);
             _dbContext.SaveChanges();
         }
+
+        [HttpPost]
+        public void DeleteCard(int cardId)
+        {
+            Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
+            _dbContext.Remove(card);
+            _dbContext.SaveChanges();
+        }
     }
 }
