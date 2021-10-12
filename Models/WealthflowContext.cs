@@ -72,11 +72,17 @@ namespace WealthFlow
 
                 entity.Property(e => e.CategoryId).HasColumnName("categoryId");
 
-                entity.Property(e => e.Keyword1)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(30)
-                    .HasColumnName("keyword")
+                    .HasColumnName("name")
                     .IsFixedLength(true);
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.Keyword)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_keyword_category");
             });
 
             modelBuilder.Entity<Transaction>(entity =>
@@ -86,7 +92,7 @@ namespace WealthFlow
                 entity.Property(e => e.TransactionId).HasColumnName("transactionId");
 
                 entity.Property(e => e.Amount)
-                    .HasColumnType("money")
+                    .HasColumnType("decimal(19, 4)")
                     .HasColumnName("amount");
 
                 entity.Property(e => e.CardId).HasColumnName("cardId");

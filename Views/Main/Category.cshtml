@@ -1,0 +1,69 @@
+﻿@{
+    Layout = "../Shared/_Layout";
+    ViewData["Title"] = "Category";
+}
+@model IEnumerable<WealthFlow.Category>
+
+<h1>@ViewData["Title"]</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="@item.CategoryId">
+                <td>
+                    <input type="text" value="@item.Name" class="form-control" />
+                </td>
+                
+                <td>
+                    <button class="btn btn-primary renameCategory">Rename</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $("document").ready(function () {
+        $(".renameCategory").click(function (e) {
+            e.preventDefault();
+            let categoryId = $(this)[0].parentNode.parentNode.id;
+            let name = $(this).closest('td').siblings().find('input')[0].value;
+
+            if (name == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { categoryId: categoryId, newName : name };
+
+            $.ajax({
+                type: "POST",
+                url: "RenameCategory",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Renamed successfully'
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+    });
+
+</script>

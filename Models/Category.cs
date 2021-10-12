@@ -10,12 +10,14 @@ namespace WealthFlow
     {
         public Category()
         {
+            Keyword = new HashSet<Keyword>();
             Transaction = new HashSet<Transaction>();
         }
 
         public int CategoryId { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<Keyword> Keyword { get; set; }
         public virtual ICollection<Transaction> Transaction { get; set; }
     }
 }
