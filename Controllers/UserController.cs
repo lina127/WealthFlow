@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WealthFlow
+namespace WealthFlow.Controllers
 {
     public class UserController : Controller
     {
@@ -24,7 +24,7 @@ namespace WealthFlow
         {
             if (IsSessionValid(out User user))
             {
-                List<Card> cards = _dbContext.Card.ToList();
+                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
                 DataDTO dataDTO = new DataDTO(user, cards);
                 return View(dataDTO);
             }
@@ -54,12 +54,13 @@ namespace WealthFlow
         [HttpPost]
         public bool IsUserValid(string email, string password)
         {
-            bool result = _dbContext.User.Select(o => o.Email == email && o.Password == password).FirstOrDefault();
-            if (result)
+            User result = _dbContext.User.Where(o => o.Email == email && o.Password == password).FirstOrDefault();
+            if (result != null)
             {
                 HttpContext.Session.SetString("CurrentUserEmail", email);
+                return true;
             }
-            return result;
+            return false;
         }
 
         [HttpPost]
