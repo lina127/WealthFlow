@@ -105,7 +105,14 @@ namespace WealthFlow.Controllers
             _dbContext.SaveChanges();
         }
 
-        
+        // Keyword
+        public IActionResult Keyword()
+        {
+            List<Keyword> keyword = _dbContext.Keyword.OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
+            List<Category> category = _dbContext.Category.OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
 
+            DataDTO dataDTO = new DataDTO(keyword, category);
+            return View(dataDTO);
+        }
     }
 }

@@ -78,6 +78,14 @@ namespace WealthFlow.Models
                     .HasMaxLength(20)
                     .IsUnicode(false)
                     .HasColumnName("type");
+
+                entity.Property(e => e.UserId).HasColumnName("userId");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Category)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_category_user");
             });
 
             modelBuilder.Entity<Keyword>(entity =>

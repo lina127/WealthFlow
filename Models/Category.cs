@@ -17,7 +17,9 @@ namespace WealthFlow.Models
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
+        public int UserId { get; set; }
 
+        public virtual User User { get; set; }
         public virtual ICollection<Keyword> Keyword { get; set; }
         public virtual ICollection<Transaction> Transaction { get; set; }
     }

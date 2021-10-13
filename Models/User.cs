@@ -11,6 +11,7 @@ namespace WealthFlow.Models
         public User()
         {
             Card = new HashSet<Card>();
+            Category = new HashSet<Category>();
         }
 
         public int UserId { get; set; }
@@ -18,5 +19,6 @@ namespace WealthFlow.Models
         public string Password { get; set; }
 
         public virtual ICollection<Card> Card { get; set; }
+        public virtual ICollection<Category> Category { get; set; }
     }
 }
