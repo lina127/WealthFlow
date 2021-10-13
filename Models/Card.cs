@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace WealthFlow
+namespace WealthFlow.Models
 {
     public partial class Card
     {

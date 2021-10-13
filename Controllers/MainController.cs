@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WealthFlow.Models;
 
 namespace WealthFlow.Controllers
 {
@@ -14,6 +15,7 @@ namespace WealthFlow.Controllers
             _dbContext = context;
         }
 
+        // Transaction
         public IActionResult Transactions() 
         {
             if (IsSessionValid(out User? user))
@@ -30,24 +32,10 @@ namespace WealthFlow.Controllers
             return RedirectToAction("Index", "User");
         }
 
-        public IActionResult Category()
-        {
-            List<Category> category = _dbContext.Category.ToList();
-            return View(category);
-        }
-        [HttpPost]
-        public void RenameCategory(int categoryId, string newName)
-        {
-            Category category = _dbContext.Category.Where(o => o.CategoryId == categoryId).FirstOrDefault();
-            category.Name = newName;
-            _dbContext.Update(category);
-            _dbContext.SaveChanges();
-        }
-
         public void AddTransaction(string csv, int cardId)
         {
             Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
-            if(card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
+            if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
             {
                 List<string> skipList = new();
                 skipList.Add("TD VISA PREAUTH PYMT");
@@ -59,7 +47,7 @@ namespace WealthFlow.Controllers
                     DateTime date = DateTime.Parse(columns[0]);
                     string merchant = columns[1].Trim();
                     decimal amount = 0;
-                    if(columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                    if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
                     {
                         amount = Convert.ToDecimal(columns[2]) * -1;
                     }
@@ -79,7 +67,6 @@ namespace WealthFlow.Controllers
                     _dbContext.SaveChanges();
                 }
             }
-            
         }
 
         public void UpdateTransaction(int transactionId, string note, int categoryId)
@@ -90,5 +77,35 @@ namespace WealthFlow.Controllers
             _dbContext.Update(transaction);
             _dbContext.SaveChanges();
         }
+
+        // Category
+        public IActionResult Category()
+        {
+            List<Category> category = _dbContext.Category.OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
+            return View(category);
+        }
+
+        [HttpPost]
+        public void AddNewCategory(string name, string type)
+        {
+            Category category = new Category();
+            category.Name = name;
+            category.Type = type;
+            _dbContext.Add(category);
+            _dbContext.SaveChanges();
+        }
+
+        [HttpPost]
+        public void RenameCategory(int categoryId, string newName, string newType)
+        {
+            Category category = _dbContext.Category.Where(o => o.CategoryId == categoryId).FirstOrDefault();
+            category.Name = newName;
+            category.Type = newType;
+            _dbContext.Update(category);
+            _dbContext.SaveChanges();
+        }
+
+        
+
     }
 }

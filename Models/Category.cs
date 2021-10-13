@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace WealthFlow
+namespace WealthFlow.Models
 {
     public partial class Category
     {
@@ -16,6 +16,7 @@ namespace WealthFlow
 
         public int CategoryId { get; set; }
         public string Name { get; set; }
+        public string Type { get; set; }
 
         public virtual ICollection<Keyword> Keyword { get; set; }
         public virtual ICollection<Transaction> Transaction { get; set; }
