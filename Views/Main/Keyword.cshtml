@@ -1,0 +1,39 @@
+﻿@{
+    Layout = "../Shared/_Layout";
+    ViewData["Title"] = "Keyword";
+}
+@model WealthFlow.DataDTO
+
+<div class="row">
+    <div class="col-9">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+    <div class="col-3">
+        <button class="btn btn-primary" id="showNewKeywordFormContainer">New Keyword</button>
+    </div>
+    <div class="col-12" id="newKeywordFormContainer">
+        <form class="form-inline">
+            <label class="sr-only" for="type">Type</label>
+            <select class="form-control mb-2 mr-sm-4" id="type">
+                <option disabled selected>Type</option>
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+            </select>
+
+            <label class="sr-only" for="type">Type</label>
+            <select class="form-control mb-2 mr-sm-4" id="type">
+                <option disabled selected>-------------</option>
+                @foreach (var i in Model.Categories)
+                {
+                    <option value="@i.CategoryId">@i.Name</option>
+                }
+
+            </select>
+
+            <label class="sr-only" for="name">Keyword</label>
+            <input type="text" class="form-control mb-2 mr-sm-4" id="name" placeholder="Keyword" />
+
+            <button type="button" class="btn btn-primary mb-2" id="addKeyword">Add Keyword</button>
+        </form>
+    </div>
+</div>
