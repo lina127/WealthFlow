@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace WealthFlow
+namespace WealthFlow.Models
 {
     public partial class WealthflowContext : DbContext
     {
@@ -40,7 +40,11 @@ namespace WealthFlow
                     .IsUnicode(false)
                     .HasColumnName("bank");
 
-                entity.Property(e => e.CardNum).HasColumnName("cardNum");
+                entity.Property(e => e.CardNum)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("cardNum");
 
                 entity.Property(e => e.Type)
                     .IsRequired()
@@ -68,6 +72,12 @@ namespace WealthFlow
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("type");
             });
 
             modelBuilder.Entity<Keyword>(entity =>

@@ -2,12 +2,38 @@
     Layout = "../Shared/_Layout";
     ViewData["Title"] = "Category";
 }
-@model IEnumerable<WealthFlow.Category>
+@model IEnumerable<WealthFlow.Models.Category>
 
-<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-9">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+    <div class="col-3">
+        <button class="btn btn-primary" id="showNewCategoryFormContainer">New Category</button>
+    </div>
+    <div class="col-12" id="newCategoryFormContainer">
+        <form class="form-inline">
+            <label class="sr-only" for="type">Type</label>
+            <select class="form-control mb-2 mr-sm-4" id="type">
+                <option disabled selected>Type</option>
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+            </select>
+
+            <label class="sr-only" for="name">Category Name</label>
+            <input type="text" class="form-control mb-2 mr-sm-4" id="name" placeholder="Category Name" />
+
+            <button type="button" class="btn btn-primary mb-2" id="addCategory">Add Category</button>
+        </form>
+    </div>
+</div>
+
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
@@ -19,11 +45,22 @@
         {
             <tr id="@item.CategoryId">
                 <td>
+                    <select class="form-control" id="categoryType">
+                        @if(item.Type.ToLower() == "income"){
+                        <option value="Income" selected>Income</option>
+                        <option value="Expense">Expense</option>
+                        }else{
+                        <option value="Income">Income</option>
+                        <option value="Expense" selected>Expense</option>
+                        }
+                    </select>
+                </td>
+                <td>
                     <input type="text" value="@item.Name" class="form-control" />
                 </td>
                 
                 <td>
-                    <button class="btn btn-primary renameCategory">Rename</button>
+                    <button class="btn btn-primary updateCategory">Update</button>
                 </td>
             </tr>
         }
@@ -32,10 +69,55 @@
 
 <script type="text/javascript">
     $("document").ready(function () {
-        $(".renameCategory").click(function (e) {
+        $("#newCategoryFormContainer").hide();
+
+        $("#showNewCategoryFormContainer").click(function (e) {
+            e.preventDefault();
+            $("#newCategoryFormContainer").show();
+        });
+
+        $("#addCategory").click(function (e) {
+            e.preventDefault();
+            $("#newCategoryFormContainer").hide();
+
+            let name = $("#name").val();
+            let type = $("#type").val();
+
+            if (name == "" || type == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { name: name, type: type };
+
+            $.ajax({
+                type: "POST",
+                url: "AddNewCategory",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Category has been added.'
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+        $(".updateCategory").click(function (e) {
             e.preventDefault();
             let categoryId = $(this)[0].parentNode.parentNode.id;
             let name = $(this).closest('td').siblings().find('input')[0].value;
+            let type = $(this).closest('td').siblings().find('select')[0].value;
 
             if (name == "") {
                 Swal.fire({
@@ -46,7 +128,7 @@
                 return;
             }
 
-            let data = { categoryId: categoryId, newName : name };
+            let data = { categoryId: categoryId, newName : name, newType : type };
 
             $.ajax({
                 type: "POST",
@@ -56,7 +138,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
-                        text: 'Renamed successfully'
+                        text: 'Category has been updated successfully.'
                     });
                 },
                 failure: function (response) {
