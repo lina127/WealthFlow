@@ -34,7 +34,10 @@ namespace WealthFlow
             });
 
             services.AddControllersWithViews();
-            services.AddDbContext<WealthFlow.WealthflowContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyDbContextConnectionString")));
+            services.AddDbContext<WealthflowContext>(options =>
+                options.UseLazyLoadingProxies()
+                .UseSqlServer(Configuration.GetConnectionString("MyDbContextConnectionString")));
+
 
 
         }
@@ -69,5 +72,7 @@ namespace WealthFlow
                     pattern: "{controller=User}/{action=Index}/{id?}");
             });
         }
+
+
     }
 }
