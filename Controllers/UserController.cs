@@ -25,7 +25,7 @@ namespace WealthFlow.Controllers
             if (IsSessionValid(out User user))
             {
                 List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
-                DataDTO dataDTO = new DataDTO(user, cards, null);
+                DataDTO dataDTO = new DataDTO(user, cards);
                 return View(dataDTO);
             }
             return RedirectToAction("Index");

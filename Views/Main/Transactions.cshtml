@@ -13,11 +13,11 @@
         <form>
             <div class="form-group">
                 <label for="type">Card #</label>
-                <select class="form-control" id="type">
+                <select class="form-control" id="cardId">
                     <option disabled selected>-------------</option>
                     @foreach (var i in Model.Cards)
                     {
-                        <option value="@i.CardId">@i.CardNum</option>
+                        <option value="@i.CardId">@i.CardNum - @i.Type [@i.Bank.ToUpper()]</option>
                     }
 
                 </select>
@@ -42,8 +42,9 @@
                 @Html.DisplayNameFor(o => o.Transactions[0].Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(o => o.Transactions[0].Category.Name)
+                Category
             </th>
+
             <th>
                 @Html.DisplayNameFor(o => o.Transactions[0].Note)
             </th>
@@ -53,18 +54,47 @@
     <tbody>
         @foreach (var item in Model.Transactions)
         {
-        <tr id="@item.CategoryId">
+        <tr id="@item.TransactionId">
             <td>
+                @item.Date.ToString("yyyy-MM-dd")
             </td>
             <td>
+                @item.Merchant
             </td>
             <td>
+                @{ 
+                        if(item.Amount < 0)
+                        {
+                            decimal amount = item.Amount * -1;
+                                <span class="text-danger">($@String.Format("{0:0.00}", amount))</span>
+                }
+                else
+                {
+            <span class="text-success">$@String.Format("{0:0.00}", @item.Amount)</span>
+                }
+                }
+               
             </td>
             <td>
+                <select class="form-control" id="category">
+                    @foreach (var i in Model.Categories)
+                    {
+                        if (i.CategoryId == item.CategoryId)
+                        {
+                            <option value="@i.CategoryId" selected>@i.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@i.CategoryId">@i.Name</option>
+                        }
+                    }
+                </select>
             </td>
-
             <td>
-                <button class="btn btn-primary renameCategory">Rename</button>
+                <input type="text" class="form-control" value="@item.Note" />
+            </td>
+            <td>
+                <button class="btn btn-primary updateTransaction">Update</button>
             </td>
         </tr>
         }
@@ -73,6 +103,7 @@
 <div class="csv"></div>
 <script type="text/javascript">
     $("document").ready(function () {
+        var csv = "";
         $("#csvFile").hide();
 
         $("#uploadCSV").click(function (e) {
@@ -81,6 +112,12 @@
         });
 
         $("#csvFile").change(function (e) {
+            let cardId = $("#cardId").val();
+
+            if (cardId == "" || cardId == null) {
+                return false;
+            }
+
             var ext = $("#csvFile").val().split(".").pop().toLowerCase();
 
             if ($.inArray(ext, ["csv"]) == -1) {
@@ -90,13 +127,55 @@
 
             if (e.target.files != undefined) {
                 var reader = new FileReader();
+                
+                
+                
                 reader.onload = function (e) {
-                    csvResult = e.target.result.split(/\r|\n|\r\n/);
-                    $('.csv').append(csvResult);
+                    csv = e.target.result;
                 }
                 reader.readAsText(e.target.files.item(0));
+                reader.onloadend = function (e) {
+                    console.log(csv);
+                    $.ajax({
+                        type: "POST",
+                        url: "AddTransaction",
+                        data: { csv: csv, cardId: cardId },
+                        success: function (response) {
+
+                        },
+                        failure: function (response) {
+                            alert(response.d);
+                        }
+                    });
+                }
+                
             }
         });
 
+        $(".updateTransaction").click(function (e) {
+            e.preventDefault();
+            let transactionId = $(this)[0].parentNode.parentNode.id;
+            let note = $(this).closest('td').siblings().find('input')[0].value;
+            let categoryId = $(this).closest('td').siblings().find('select')[0].value;
+
+            let data = { transactionId : transactionId, note: note, categoryId: categoryId };
+
+
+            $.ajax({
+                type: "POST",
+                url: "UpdateTransaction",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Updated successfully'
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
     });
 </script> 
