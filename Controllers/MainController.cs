@@ -81,9 +81,12 @@ namespace WealthFlow.Controllers
         // Category
         public IActionResult Category()
         {
-            User currentUser = GetCurrentUser();
-            List<Category> category = _dbContext.Category.Where(o => o.UserId == currentUser.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
-            return View(category);
+            if (IsSessionValid(out User? user))
+            {
+                List<Category> category = _dbContext.Category.Where(o => o.UserId == user.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
+                return View(category);
+            }
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]
@@ -111,13 +114,16 @@ namespace WealthFlow.Controllers
         // Keyword
         public IActionResult Keyword()
         {
-            User currentUser = GetCurrentUser();
-            List<Keyword> keyword = _dbContext.Keyword.Where(o => o.Category.UserId == currentUser.UserId).OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
-            List<Category> category = _dbContext.Category.Where(o => o.UserId == currentUser.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
-            
-            List<Card> card = _dbContext.Card.Where(o => o.UserId == currentUser.UserId).ToList();
-            DataDTO dataDTO = new DataDTO(keyword, category, card);
-            return View(dataDTO);
+            if (IsSessionValid(out User? user))
+            {
+                List<Keyword> keyword = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
+                List<Category> category = _dbContext.Category.Where(o => o.UserId == user.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
+
+                List<Card> card = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
+                DataDTO dataDTO = new DataDTO(keyword, category, card);
+                return View(dataDTO);
+            }
+            return RedirectToAction("Index", "User");
         }
 
         public void AddNewKeyword(string name, int categoryId)
