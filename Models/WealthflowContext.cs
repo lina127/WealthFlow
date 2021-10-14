@@ -97,11 +97,11 @@ namespace WealthFlow.Models
 
                 entity.Property(e => e.CardId).HasColumnName("cardId");
 
-                entity.Property(e => e.ExcludeKeyword1)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(30)
                     .IsUnicode(false)
-                    .HasColumnName("excludeKeyword");
+                    .HasColumnName("name");
 
                 entity.Property(e => e.UserId).HasColumnName("userId");
 
