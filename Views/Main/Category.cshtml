@@ -28,7 +28,7 @@
     </div>
 </div>
 
-<table class="table">
+<table class="table" id="categoryTable">
     <thead>
         <tr>
             <th>
@@ -70,6 +70,8 @@
 <script type="text/javascript">
     $("document").ready(function () {
         $("#newCategoryFormContainer").hide();
+
+        $("#categoryTable").DataTable();
 
         $("#showNewCategoryFormContainer").click(function (e) {
             e.preventDefault();

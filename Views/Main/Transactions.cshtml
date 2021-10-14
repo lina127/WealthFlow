@@ -29,7 +29,7 @@
 </div>
 
 
-<table class="table">
+<table class="table" id="transactionTable">
     <thead>
         <tr>
             <th>
@@ -105,6 +105,8 @@
     $("document").ready(function () {
         var csv = "";
         $("#csvFile").hide();
+
+        $("#transactionTable").DataTable();
 
         $("#uploadCSV").click(function (e) {
             e.preventDefault();
