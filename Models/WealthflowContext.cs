@@ -20,6 +20,7 @@ namespace WealthFlow.Models
 
         public virtual DbSet<Card> Card { get; set; }
         public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<ExcludeKeyword> ExcludeKeyword { get; set; }
         public virtual DbSet<Keyword> Keyword { get; set; }
         public virtual DbSet<Transaction> Transaction { get; set; }
         public virtual DbSet<User> User { get; set; }
@@ -86,6 +87,35 @@ namespace WealthFlow.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_category_user");
+            });
+
+            modelBuilder.Entity<ExcludeKeyword>(entity =>
+            {
+                entity.ToTable("excludeKeyword");
+
+                entity.Property(e => e.ExcludeKeywordId).HasColumnName("excludeKeywordId");
+
+                entity.Property(e => e.CardId).HasColumnName("cardId");
+
+                entity.Property(e => e.ExcludeKeyword1)
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .IsUnicode(false)
+                    .HasColumnName("excludeKeyword");
+
+                entity.Property(e => e.UserId).HasColumnName("userId");
+
+                entity.HasOne(d => d.Card)
+                    .WithMany(p => p.ExcludeKeyword)
+                    .HasForeignKey(d => d.CardId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_excludeKeyword_card");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ExcludeKeyword)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_excludeKeyword_user");
             });
 
             modelBuilder.Entity<Keyword>(entity =>
