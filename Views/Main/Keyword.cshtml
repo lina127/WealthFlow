@@ -67,9 +67,38 @@
         }
     </tbody>
 </table>
+
+<div class="col-6">
+    <button class="btn btn-primary" id="showExcludeKeywordFormContainer">New Keyword Exclude</button>
+</div>
+
+<div class="col-12" id="newExcludeKeywordFormContainer">
+    <form class="form-inline">
+
+        <div class="form-group">
+            <label for="type">Card #</label>
+            <select class="form-control" id="cardId">
+                <option disabled selected>-------------</option>
+               @foreach (var i in Model.Cards)
+                {
+                    <option value="@i.CardId">@i.CardNum - @i.Type [@i.Bank.ToUpper()]</option>
+                }
+
+            </select>
+        </div>
+
+
+        <label class="sr-only" for="name">Category Name</label>
+        <input type="text" class="form-control mb-2 mr-sm-4" id="name" placeholder="Category Name" />
+
+        <button type="button" class="btn btn-primary mb-2" id="addCategory">Add Category</button>
+    </form>
+</div>
+
 <script type="text/javascript">
     $("document").ready(function () {
         $("#newKeywordFormContainer").hide();
+        $("#newExcludeKeywordFormContainer").hide();
 
         $("#showNewKeywordFormContainer").click(function (e) {
             e.preventDefault();
