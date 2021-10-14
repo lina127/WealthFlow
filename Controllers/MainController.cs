@@ -81,16 +81,19 @@ namespace WealthFlow.Controllers
         // Category
         public IActionResult Category()
         {
-            List<Category> category = _dbContext.Category.OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
+            User currentUser = GetCurrentUser();
+            List<Category> category = _dbContext.Category.Where(o => o.UserId == currentUser.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
             return View(category);
         }
 
         [HttpPost]
         public void AddNewCategory(string name, string type)
         {
+            User currentUser = GetCurrentUser();
             Category category = new Category();
             category.Name = name;
             category.Type = type;
+            category.UserId = currentUser.UserId;
             _dbContext.Add(category);
             _dbContext.SaveChanges();
         }
@@ -110,9 +113,11 @@ namespace WealthFlow.Controllers
         {
             List<Keyword> keyword = _dbContext.Keyword.OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
             List<Category> category = _dbContext.Category.OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
-
-            DataDTO dataDTO = new DataDTO(keyword, category);
+            User currentUser = GetCurrentUser();
+            List<Card> card = _dbContext.Card.Where(o => o.UserId == currentUser.UserId).ToList();
+            DataDTO dataDTO = new DataDTO(keyword, category, card);
             return View(dataDTO);
         }
+
     }
 }
