@@ -34,10 +34,13 @@ namespace WealthFlow
             Categories = categories;
         }
 
-        public DataDTO(List<Keyword> keywords, List<Category> categories)
+        public DataDTO(List<Keyword> keywords, List<Category> categories, List<Card> cards)
         {
             Keywords = keywords;
             Categories = categories;
+            Cards = cards;
         }
+
+       
     }
 }
