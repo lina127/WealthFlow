@@ -111,9 +111,10 @@ namespace WealthFlow.Controllers
         // Keyword
         public IActionResult Keyword()
         {
-            List<Keyword> keyword = _dbContext.Keyword.OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
-            List<Category> category = _dbContext.Category.OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
             User currentUser = GetCurrentUser();
+            List<Keyword> keyword = _dbContext.Keyword.Where(o => o.Category.UserId == currentUser.UserId).OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
+            List<Category> category = _dbContext.Category.Where(o => o.UserId == currentUser.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
+            
             List<Card> card = _dbContext.Card.Where(o => o.UserId == currentUser.UserId).ToList();
             DataDTO dataDTO = new DataDTO(keyword, category, card);
             return View(dataDTO);
