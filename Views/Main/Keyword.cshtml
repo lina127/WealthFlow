@@ -30,7 +30,7 @@
         </form>
     </div>
 </div>
-<table class="table">
+<table class="table" id="keywordTable">
     <thead>
         <tr>
             <th>
@@ -99,6 +99,8 @@
     $("document").ready(function () {
         $("#newKeywordFormContainer").hide();
         $("#newExcludeKeywordFormContainer").hide();
+
+        $("#keywordTable").DataTable();
 
         $("#showNewKeywordFormContainer").click(function (e) {
             e.preventDefault();
