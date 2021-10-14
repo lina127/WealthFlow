@@ -14,14 +14,7 @@
     <div class="col-12" id="newKeywordFormContainer">
         <form class="form-inline">
             <label class="sr-only" for="type">Type</label>
-            <select class="form-control mb-2 mr-sm-4" id="type">
-                <option disabled selected>Type</option>
-                <option value="Income">Income</option>
-                <option value="Expense">Expense</option>
-            </select>
-
-            <label class="sr-only" for="type">Type</label>
-            <select class="form-control mb-2 mr-sm-4" id="type">
+            <select class="form-control mb-2 mr-sm-4" id="categoryId">
                 <option disabled selected>-------------</option>
                 @foreach (var i in Model.Categories)
                 {
@@ -68,7 +61,7 @@
 
                 <td>
                     <button class="btn btn-primary updateKeyword">Update</button>
-                    <button class="btn btn-danger deleteKeyword">Update</button>
+                    <button class="btn btn-danger deleteKeyword">Delete</button>
                 </td>
             </tr>
         }
@@ -104,22 +97,22 @@
 
 <script type="text/javascript">
     $("document").ready(function () {
-        $("#newCategoryFormContainer").hide();
+        $("#newKeywordFormContainer").hide();
         $("#newExcludeKeywordFormContainer").hide();
 
-        $("#showNewCategoryFormContainer").click(function (e) {
+        $("#showNewKeywordFormContainer").click(function (e) {
             e.preventDefault();
-            $("#newCategoryFormContainer").show();
+            $("#newKeywordFormContainer").show();
         });
 
-        $("#addCategory").click(function (e) {
+        $("#addKeyword").click(function (e) {
             e.preventDefault();
-            $("#newCategoryFormContainer").hide();
+            $("#newKeywordFormContainer").hide();
 
             let name = $("#name").val();
-            let type = $("#type").val();
+            let categoryId = $("#categoryId").val();
 
-            if (name == "" || type == "") {
+            if (name == ""  || categoryId < 1) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -128,11 +121,11 @@
                 return;
             }
 
-            let data = { name: name, type: type };
+            let data = { name: name, categoryId: categoryId };
 
             $.ajax({
                 type: "POST",
-                url: "AddNewCategory",
+                url: "AddNewKeyword",
                 data: data,
                 success: function (response) {
                     Swal.fire({
@@ -149,11 +142,10 @@
             });
         });
 
-        $(".updateCategory").click(function (e) {
+        $(".updateKeyword").click(function (e) {
             e.preventDefault();
-            let categoryId = $(this)[0].parentNode.parentNode.id;
+            let keywordId = $(this)[0].parentNode.parentNode.id;
             let name = $(this).closest('td').siblings().find('input')[0].value;
-            let type = $(this).closest('td').siblings().find('select')[0].value;
 
             if (name == "") {
                 Swal.fire({
@@ -164,17 +156,42 @@
                 return;
             }
 
-            let data = { categoryId: categoryId, newName: name, newType: type };
+            let data = { keywordId: keywordId, newName : name};
 
             $.ajax({
                 type: "POST",
-                url: "RenameCategory",
+                url: "RenameKeyword",
                 data: data,
                 success: function (response) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
-                        text: 'Category has been updated successfully.'
+                        text: 'Keyword has been updated successfully.'
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+        $(".deleteKeyword").click(function (e) {
+            e.preventDefault();
+            let keywordId = $(this)[0].parentNode.parentNode.id;
+
+            let data = { keywordId: keywordId };
+
+            $.ajax({
+                type: "POST",
+                url: "DeleteKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Keyword has been deleted successfully.'
+                    }).then(function () {
+                        location.reload();
                     });
                 },
                 failure: function (response) {

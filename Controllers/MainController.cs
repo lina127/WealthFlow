@@ -119,5 +119,28 @@ namespace WealthFlow.Controllers
             return View(dataDTO);
         }
 
+        public void AddNewKeyword(string name, int categoryId)
+        {
+            Keyword keyword = new Keyword();
+            keyword.Name = name;
+            keyword.CategoryId = categoryId;
+            _dbContext.Add(keyword);
+            _dbContext.SaveChanges();
+        }
+
+        public void RenameKeyword(int keywordId, string newName)
+        {
+            Keyword keyword = _dbContext.Keyword.Where(o => o.KeywordId == keywordId).FirstOrDefault();
+            keyword.Name = newName;
+            _dbContext.Update(keyword);
+            _dbContext.SaveChanges();
+        }
+
+        public void DeleteKeyword(int keywordId)
+        {
+            Keyword keyword = _dbContext.Keyword.Where(o => o.KeywordId == keywordId).FirstOrDefault();
+            _dbContext.Remove(keyword);
+            _dbContext.SaveChanges();
+        }
     }
 }
