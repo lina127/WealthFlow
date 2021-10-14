@@ -9,7 +9,7 @@ namespace WealthFlow.Models
     public partial class ExcludeKeyword
     {
         public int ExcludeKeywordId { get; set; }
-        public string ExcludeKeyword1 { get; set; }
+        public string Name { get; set; }
         public int UserId { get; set; }
         public int CardId { get; set; }
 
