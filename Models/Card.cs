@@ -10,6 +10,7 @@ namespace WealthFlow.Models
     {
         public Card()
         {
+            ExcludeKeyword = new HashSet<ExcludeKeyword>();
             Transaction = new HashSet<Transaction>();
         }
 
@@ -20,6 +21,7 @@ namespace WealthFlow.Models
         public string Bank { get; set; }
 
         public virtual User User { get; set; }
+        public virtual ICollection<ExcludeKeyword> ExcludeKeyword { get; set; }
         public virtual ICollection<Transaction> Transaction { get; set; }
     }
 }

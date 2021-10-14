@@ -22,6 +22,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[excludeKeyword]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[keyword]",
          "ObjectType": 0
       },
