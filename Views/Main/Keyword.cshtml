@@ -53,7 +53,7 @@
                     @item.Category.Type
                 </td>
                 <td>
-                    @item.Category.Name
+                    @item.Category.Name 
                 </td>
                 <td>
                     <input type="text" value="@item.Name" class="form-control" />
@@ -103,10 +103,10 @@
                     </form>
                 </td>
                 <td>
-                    <input type="text" class="form-control mb-2 mr-sm-4" id="name" placeholder="Exclude Keyword" />
+                    <input type="text" class="form-control mb-2 mr-sm-4" placeholder="Exclude Keyword" id="excludeKeywordName" />
                 </td>
                 <td>
-                    <button type="button" class="btn btn-primary mb-2" id="addCategory">Add Category</button>
+                    <button type="button" class="btn btn-primary mb-2" id="addExcludeKeyword">Add Exclude Keyword</button>
                 </td>
             </tr>
         </tbody>
@@ -128,26 +128,27 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>
-                    @foreach (var i in Model.Cards){
-                        string str = i.CardNum.Substring(i.CardNum.Length - 4)
-                            + " - "+ i.Type+ " ["
-                            + i.Bank.ToUpper() + "]";
+            @foreach (var i in Model.ExcludeKeywords)
+            {
+                string str = i.Card.CardNum.Substring(i.Card.CardNum.Length - 4)
+            + " - " + i.Card.Type + " ["
+            + i.Card.Bank.ToUpper() + "]";
+                <tr>
+                    <td>
                         @str
-                    }
-                </td>
-                <td>
-                    @foreach (var i in Model.User.ExcludeKeyword)
-                    {
-                        <input type="text" class="form-control" value="@i.name" />
-                    }
                     </td>
-                <td>
-                    <button class="btn btn-primary updateExcludeKeyword">Update</button>
-                    <button class="btn btn-danger deleteExcludeKeyword">Delete</button>
-                </td>
-            </tr>
+
+
+                    <td>
+                        <input type="text" class="form-control" value="@i.Name" />
+                    </td>
+
+                    <td>
+                        <button class="btn btn-primary updateExcludeKeyword">Update</button>
+                        <button class="btn btn-danger deleteExcludeKeyword">Delete</button>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 
@@ -161,114 +162,147 @@
         $("#keywordTable").DataTable();
 
         $("#showNewKeywordFormContainer").click(function (e) {
-                                    e.preventDefault();
+            e.preventDefault();
             $("#newKeywordFormContainer").show();
-                                });
+        });
 
         $("#addKeyword").click(function (e) {
-                                    e.preventDefault();
+            e.preventDefault();
             $("#newKeywordFormContainer").hide();
 
-                                    let name = $("#name").val();
-                                    let categoryId = $("#categoryId").val();
+            let name = $("#name").val();
+            let categoryId = $("#categoryId").val();
 
-                                    if (name == "" || categoryId < 1) {
-                                        Swal.fire({
-                                        icon: 'error',
+            if (name == "" || categoryId < 1) {
+                Swal.fire({
+                    icon: 'error',
                     title: 'Error',
                     text: 'Empty field found.'
-                                        });
-                                        return;
-                                    }
+                });
+                return;
+            }
 
-                                    let data = { name: name, categoryId: categoryId };
+            let data = { name: name, categoryId: categoryId };
 
             $.ajax({
-                                type: "POST",
+                type: "POST",
                 url: "AddNewKeyword",
                 data: data,
                 success: function (response) {
-                                        Swal.fire({
-                                        icon: 'success',
+                    Swal.fire({
+                        icon: 'success',
                         title: 'Success',
                         text: 'Category has been added.'
-                                        }).then(function () {
-                                            location.reload();
-                                        });
-                                    },
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
                 failure: function (response) {
-                                        alert(response.d);
-                                    }
-                                });
-                            });
+                    alert(response.d);
+                }
+            });
+        });
 
         $(".updateKeyword").click(function (e) {
-                                e.preventDefault();
-                                let keywordId = $(this)[0].parentNode.parentNode.id;
-                                let name = $(this).closest('td').siblings().find('input')[0].value;
+            e.preventDefault();
+            let keywordId = $(this)[0].parentNode.parentNode.id;
+            let name = $(this).closest('td').siblings().find('input')[0].value;
 
-                                if (name == "") {
-                                    Swal.fire({
-                                    icon: 'error',
+            if (name == "") {
+                Swal.fire({
+                    icon: 'error',
                     title: 'Error',
                     text: 'Empty field found.'
-                                    });
-                                    return;
-                                }
+                });
+                return;
+            }
 
-                                let data = { keywordId: keywordId, newName: name };
+            let data = { keywordId: keywordId, newName: name };
 
             $.ajax({
-                            type: "POST",
+                type: "POST",
                 url: "RenameKeyword",
                 data: data,
                 success: function (response) {
-                                    Swal.fire({
-                                    icon: 'success',
+                    Swal.fire({
+                        icon: 'success',
                         title: 'Success',
                         text: 'Keyword has been updated successfully.'
-                                    });
-                                },
+                    });
+                },
                 failure: function (response) {
-                                    alert(response.d);
-                                }
-                            });
+                    alert(response.d);
+                }
+            });
         });
 
         $(".deleteKeyword").click(function (e) {
-                            e.preventDefault();
-                            let keywordId = $(this)[0].parentNode.parentNode.id;
+            e.preventDefault();
+            let keywordId = $(this)[0].parentNode.parentNode.id;
 
-                            let data = { keywordId: keywordId };
+            let data = { keywordId: keywordId };
 
             $.ajax({
-                        type: "POST",
+                type: "POST",
                 url: "DeleteKeyword",
                 data: data,
                 success: function (response) {
-                                Swal.fire({
-                                icon: 'success',
+                    Swal.fire({
+                        icon: 'success',
                         title: 'Success',
                         text: 'Keyword has been deleted successfully.'
-                                }).then(function () {
-                                    location.reload();
-                                });
-                            },
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
                 failure: function (response) {
-                                alert(response.d);
-                            }
-                        });
+                    alert(response.d);
+                }
+            });
         });
 
         $("#showExcludeKeywordFormContainer").click(function (e) {
-                        e.preventDefault();
+            e.preventDefault();
             $("#newExcludeKeywordFormContainer").show();
-                    });
+        });
 
-        $("#addCategory").click(function (e) {
-                        e.preventDefault();
+        $("#addExcludeKeyword").click(function (e) {
+            e.preventDefault();
             $("#newExcludeKeywordFormContainer").hide();
+
+            let cardId = $("#cardId").val();
+            let excludeKeywordName = $("#excludeKeywordName").val();
+            if ( excludeKeywordName == "" || cardId < 1) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { cardId: cardId, excludeKeywordName: excludeKeywordName };
+
+            $.ajax({
+                type: "POST",
+                url: "AddExclueKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Exclude keyword has been added.'
+                    }).then(function () {
+                        location.reload();
                     });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+
     });
 
 </script>
