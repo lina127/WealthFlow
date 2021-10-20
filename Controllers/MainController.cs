@@ -131,8 +131,16 @@ namespace WealthFlow.Controllers
                             break;
                         }
                     }
-                    _dbContext.Transaction.Add(transaction);
-                    _dbContext.SaveChanges();
+
+                    List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
+
+                    if(!transactions.Any(o => o.Date == date && o.Merchant == merchant && o.Amount == amount && o.CardId == cardId))
+                    {
+                        _dbContext.Transaction.Add(transaction);
+                        _dbContext.SaveChanges();
+                    }
+
+                    
                 }
 
                 
@@ -147,6 +155,39 @@ namespace WealthFlow.Controllers
             transaction.CategoryId = categoryId;
             _dbContext.Update(transaction);
             _dbContext.SaveChanges();
+        }
+
+        public void SyncTransactions()
+        {
+            User user = GetCurrentUser();
+
+            List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
+            List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList();
+            List<Keyword> keywords = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).ToList();
+            List<ExcludeKeyword> excludeKeywords = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).ToList();
+
+            foreach(var t in transactions)
+            {
+                // Exclude => skip to next item
+                if (excludeKeywords.Any(o => t.Merchant.ToLower().Contains(o.Name.ToLower())))
+                {
+                    _dbContext.Transaction.Remove(t);
+                    _dbContext.SaveChanges();
+                }
+                foreach (var k in keywords)
+                {
+                    if (t.Merchant.ToLower().Contains(k.Name.ToLower()))
+                    {
+                        if(t.CategoryId != k.CategoryId)
+                        {
+                            t.CategoryId = k.CategoryId;
+                            _dbContext.Transaction.Update(t);
+                            _dbContext.SaveChanges();
+                        }
+                        
+                    }
+                }
+            }
         }
 
         // Category
