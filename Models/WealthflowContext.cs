@@ -103,19 +103,11 @@ namespace WealthFlow.Models
                     .IsUnicode(false)
                     .HasColumnName("name");
 
-                entity.Property(e => e.UserId).HasColumnName("userId");
-
                 entity.HasOne(d => d.Card)
                     .WithMany(p => p.ExcludeKeyword)
                     .HasForeignKey(d => d.CardId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_excludeKeyword_card");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.ExcludeKeyword)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_excludeKeyword_user");
             });
 
             modelBuilder.Entity<Keyword>(entity =>
