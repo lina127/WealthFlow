@@ -25,7 +25,8 @@ namespace WealthFlow.Controllers
         {
             if (IsSessionValid(out User user))
             {
-                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
+                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId && o.Status == "Active").ToList();
+
                 DataDTO dataDTO = new DataDTO(user, cards);
                 return View(dataDTO);
             }
@@ -81,7 +82,7 @@ namespace WealthFlow.Controllers
         public void DeleteCard(int cardId)
         {
             Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
-            _dbContext.Remove(card);
+            card.Status = "Deavtive";
             _dbContext.SaveChanges();
         }
     }
