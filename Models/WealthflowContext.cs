@@ -169,7 +169,6 @@ namespace WealthFlow.Models
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Transaction)
                     .HasForeignKey(d => d.CategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_transaction_category");
             });
 
