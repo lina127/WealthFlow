@@ -34,6 +34,13 @@ namespace WealthFlow.Controllers
 
         public void AddTransaction(string csv, int cardId)
         {
+            User user = GetCurrentUser();
+            if(user is not null)
+            {
+                List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList();
+                List<Keyword> keywords = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).ToList();
+                //List<ExcludeKeyword> excludeKeywords = _dbContext.ExcludeKeyword.Where(o => o.)
+            }
             Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
             if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
             {
@@ -66,6 +73,9 @@ namespace WealthFlow.Controllers
                     _dbContext.Transaction.Add(transaction);
                     _dbContext.SaveChanges();
                 }
+            }else if(card.Bank.ToLower() == "cibc" && card.Type.ToLower() == "debit")
+            {
+
             }
         }
 
