@@ -7,13 +7,13 @@
 
 <div class="row">
     <div class="col-6">
-        <h1>@ViewData["Title"]</h1>
+        <h1 class="d-inline">@ViewData["Title"]</h1><a href="#!" id="syncBtn"><i class="fas fa-sync"></i></a>
     </div>
     <div class="col-6">
         <form class="row row-cols-lg-auto g-3 align-items-center float-right">
             <div class="col-md-8">
                 <select class="form-control" id="cardId">
-                    <option disabled selected>Card #</option>
+                    <option disabled selected>Select Card</option>
                     @foreach (var i in Model.Cards)
                     {
                         <option value="@i.CardId">@i.CardNum - @i.Type [@i.Bank.ToUpper()]</option>
@@ -36,6 +36,9 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(o => o.Transactions[0].Date)
+            </th>
+            <th>
+                Card
             </th>
             <th>
                 @Html.DisplayNameFor(o => o.Transactions[0].Merchant)
@@ -61,21 +64,24 @@
                 @item.Date.ToString("yyyy-MM-dd")
             </td>
             <td>
+                @item.Card.Bank.ToUpper() - @item.Card.Type
+            </td>
+            <td>
                 @item.Merchant
             </td>
             <td>
-                @{ 
-                        if(item.Amount < 0)
-                        {
-                            decimal amount = item.Amount * -1;
-                                <span class="text-danger">($@String.Format("{0:0.00}", amount))</span>
+                @{
+                    if (item.Amount < 0)
+                    {
+                        decimal amount = item.Amount * -1;
+                        <span class="text-danger">($@String.Format("{0:0.00}", amount))</span>
+                    }
+                    else
+                    {
+                        <span class="text-success">$@String.Format("{0:0.00}", @item.Amount)</span>
+                    }
                 }
-                else
-                {
-            <span class="text-success">$@String.Format("{0:0.00}", @item.Amount)</span>
-                }
-                }
-               
+
             </td>
             <td>
                 <select class="form-control" id="category">
@@ -93,6 +99,7 @@
                     }
                 </select>
             </td>
+
             <td>
                 <input type="text" class="form-control" value="@item.Note" />
             </td>
@@ -109,7 +116,9 @@
         var csv = "";
         $("#csvFile").hide();
 
-        $("#transactionTable").DataTable();
+        $("#transactionTable").DataTable({
+            "order": [[0, "desc"]]
+        });
 
         $("#uploadCSV").click(function (e) {
             e.preventDefault();
@@ -132,9 +141,6 @@
 
             if (e.target.files != undefined) {
                 var reader = new FileReader();
-                
-                
-                
                 reader.onload = function (e) {
                     csv = e.target.result;
                 }
@@ -163,24 +169,20 @@
             }
         });
 
-        $(".updateTransaction").click(function (e) {
+        
+
+        $("#syncBtn").click(function (e) {
             e.preventDefault();
-            let transactionId = $(this)[0].parentNode.parentNode.id;
-            let note = $(this).closest('td').siblings().find('input')[0].value;
-            let categoryId = $(this).closest('td').siblings().find('select')[0].value;
-
-            let data = { transactionId : transactionId, note: note, categoryId: categoryId };
-
-
             $.ajax({
                 type: "POST",
-                url: "UpdateTransaction",
-                data: data,
+                url: "SyncTransactions",
                 success: function (response) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
-                        text: 'Updated successfully'
+                        text: 'Synced successfully'
+                    }).then(function () {
+                        location.reload();
                     });
                 },
                 failure: function (response) {
@@ -189,4 +191,29 @@
             });
         });
     });
+
+    $(document).on('click', '.updateTransaction', function (e) {
+        e.preventDefault();
+        let transactionId = $(this)[0].parentNode.parentNode.id;
+        let note = $(this).closest('td').siblings().find('input')[0].value ?? "";
+        let categoryId = $(this).closest('td').siblings().find('select')[0].value;
+
+        let data = { transactionId: transactionId, note: note, categoryId: categoryId };
+        $.ajax({
+            type: "POST",
+            url: "UpdateTransaction",
+            data: data,
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Updated successfully'
+                });
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
+        });
+    });
+
 </script> 
