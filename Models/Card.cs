@@ -19,6 +19,7 @@ namespace WealthFlow.Models
         public string Type { get; set; }
         public int UserId { get; set; }
         public string Bank { get; set; }
+        public string Status { get; set; }
 
         public virtual User User { get; set; }
         public virtual ICollection<ExcludeKeyword> ExcludeKeyword { get; set; }
