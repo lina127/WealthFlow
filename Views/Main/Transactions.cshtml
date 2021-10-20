@@ -144,7 +144,13 @@
                         url: "AddTransaction",
                         data: { csv: csv, cardId: cardId },
                         success: function (response) {
-
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Transactions have been added.'
+                            }).then(function () {
+                                location.reload();
+                            });
                         },
                         failure: function (response) {
                             alert(response.d);

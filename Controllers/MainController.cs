@@ -42,37 +42,22 @@ namespace WealthFlow.Controllers
                 List<ExcludeKeyword> excludeKeywords = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).ToList();
 
                 Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
-                if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
+
+                string[] rows = csv.Split("\r\n");
+                foreach (var r in rows)
                 {
-                    string[] rows = csv.Split("\r\n");
-                    foreach (var r in rows)
+                    string[] columns = r.Split(",");
+                    Transaction transaction = new Transaction();
+                    DateTime date = new DateTime();
+                    string merchant = "";
+                    decimal amount = 0;
+
+                    if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
                     {
-                        string[] columns = r.Split(",");
-                        Transaction transaction = new Transaction();
                         if (columns[0] == "")
                             continue;
-                        
-                        DateTime date = DateTime.Parse(columns[0]);
-                        transaction.Date = date;
-
-                        string merchant = columns[1].Trim();
-                        transaction.Merchant = merchant;
-
-                        // Exclude => skip to next item
-                        if (excludeKeywords.Any(o => merchant.ToLower().Contains(o.Name.ToLower())))
-                            continue;
-
-                        // Assign to a category if valid
-                        foreach(var k in keywords)
-                        {
-                            if (merchant.ToLower().Contains(k.Name.ToLower()))
-                            {
-                                transaction.CategoryId = k.CategoryId;
-                                break;
-                            }
-                        }
-                        
-                        decimal amount = 0;
+                        date = DateTime.Parse(columns[0]);
+                        merchant = columns[1].Trim();
                         if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
                         {
                             amount = Convert.ToDecimal(columns[2]) * -1;
@@ -81,20 +66,76 @@ namespace WealthFlow.Controllers
                         {
                             amount = Convert.ToDecimal(columns[3]);
                         }
-                        transaction.Amount = amount;
-
-
-                        transaction.CardId = cardId;
-                        transaction.Note = "";
-
-                        _dbContext.Transaction.Add(transaction);
-                        _dbContext.SaveChanges();
                     }
-                }
-                else if (card.Bank.ToLower() == "cibc" && card.Type.ToLower() == "debit")
-                {
+                    else if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "credit")
+                    {
+                        if (columns[0] == "")
+                            continue;
+                        date = DateTime.Parse(columns[0]);
+                        merchant = columns[1].Trim();
+                        if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                        {
+                            amount = Convert.ToDecimal(columns[2]) * -1;
+                        }
+                        else
+                        {
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
+                    }
+                    else if (card.Bank.ToLower() == "cibc" && card.Type.ToLower() == "debit")
+                    {
+                        if (columns[0] == "")
+                            continue;
+                        date = DateTime.Parse(columns[0]);
+                        merchant = columns[1].Trim();
+                        if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                        {
+                            amount = Convert.ToDecimal(columns[2]) * -1;
+                        }
+                        else
+                        {
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
+                    }
+                    else if (card.Bank.ToLower() == "cibc" && card.Type.ToLower() == "credit")
+                    {
+                        if (columns[0] == "")
+                            continue;
+                        date = DateTime.Parse(columns[0]);
+                        merchant = columns[1].Trim();
+                        if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                        {
+                            amount = Convert.ToDecimal(columns[2]) * -1;
+                        }
+                        else
+                        {
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
+                    }
+                    // Exclude => skip to next item
+                    if (excludeKeywords.Any(o => merchant.ToLower().Contains(o.Name.ToLower())))
+                        continue;
 
+                    transaction.Date = date;
+                    transaction.Merchant = merchant;
+                    transaction.Amount = amount;
+                    transaction.CardId = cardId;
+                    transaction.Note = "";
+
+                    // Assign to a category if valid
+                    foreach (var k in keywords)
+                    {
+                        if (merchant.ToLower().Contains(k.Name.ToLower()))
+                        {
+                            transaction.CategoryId = k.CategoryId;
+                            break;
+                        }
+                    }
+                    _dbContext.Transaction.Add(transaction);
+                    _dbContext.SaveChanges();
                 }
+
+                
             }
             
         }
