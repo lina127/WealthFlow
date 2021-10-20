@@ -9,7 +9,7 @@
         <h1>@ViewData["Title"]</h1>
     </div>
     <div class="col-3">
-        <button type="submit" class="btn btn-primary" id="showNewCategoryFormContainer">New Category</button>
+        <button type="submit" class="btn btn-primary float-right" id="showNewCategoryFormContainer">New Category</button>
     </div>
     <div class="col-12" id="newCategoryFormContainer">
         <form class="form-inline">
@@ -59,7 +59,7 @@
                     <input type="text" value="@item.Name" class="form-control" />
                 </td>
                 
-                <td>
+                <td class="text-right">
                     <button class="btn btn-primary updateCategory">Update</button>
                 </td>
             </tr>

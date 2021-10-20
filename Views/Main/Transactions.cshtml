@@ -10,11 +10,10 @@
         <h1>@ViewData["Title"]</h1>
     </div>
     <div class="col-6">
-        <form>
-            <div class="form-group">
-                <label for="type">Card #</label>
+        <form class="row row-cols-lg-auto g-3 align-items-center float-right">
+            <div class="col-md-8">
                 <select class="form-control" id="cardId">
-                    <option disabled selected>-------------</option>
+                    <option disabled selected>Card #</option>
                     @foreach (var i in Model.Cards)
                     {
                         <option value="@i.CardId">@i.CardNum - @i.Type [@i.Bank.ToUpper()]</option>
@@ -22,9 +21,12 @@
 
                 </select>
             </div>
+            <div class="col-md-4">
+                <input type="file" id="csvFile" />
+                <button class="btn btn-primary" id="uploadCSV">Upload CSV</button>
+            </div>
         </form>
-        <input type="file" id="csvFile" />
-        <button class="btn btn-primary" id="uploadCSV">Upload CSV</button>
+        
     </div>
 </div>
 
@@ -94,7 +96,7 @@
             <td>
                 <input type="text" class="form-control" value="@item.Note" />
             </td>
-            <td>
+            <td class="text-right">
                 <button class="btn btn-primary updateTransaction">Update</button>
             </td>
         </tr>
