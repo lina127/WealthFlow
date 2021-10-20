@@ -67,10 +67,16 @@
         }
     </tbody>
 </table>
+<div class="row">
+    <div class="col-9">
+        <h1>Exclude Keyword</h1>
+    </div>
+    <div class="col-3">
+        <button class="btn btn-primary" id="showExcludeKeywordFormContainer">New Keyword Exclude</button>
+    </div>
 
-<div class="col-6">
-    <button class="btn btn-primary" id="showExcludeKeywordFormContainer">New Keyword Exclude</button>
 </div>
+
 
 <div class="col-12" id="newExcludeKeywordFormContainer">
     <table class="table">
@@ -133,7 +139,7 @@
                 string str = i.Card.CardNum.Substring(i.Card.CardNum.Length - 4)
             + " - " + i.Card.Type + " ["
             + i.Card.Bank.ToUpper() + "]";
-                <tr>
+                <tr id="@i.ExcludeKeywordId">
                     <td>
                         @str
                     </td>
@@ -302,7 +308,63 @@
             });
         });
 
+        $(".updateExcludeKeyword").click(function (e) {
+            e.preventDefault();
+            let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
+            let name = $(this).closest('td').siblings().find('input')[0].value;
 
+            if (name == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { excludeKeywordId: excludeKeywordId, newName: name };
+
+            $.ajax({
+                type: "POST",
+                url: "RenameExcludeKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Keyword has been updated successfully.'
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+        $(".deleteExcludeKeyword").click(function (e) {
+            e.preventDefault();
+            let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
+
+            let data = { excludeKeywordId: excludeKeywordId };
+
+            $.ajax({
+                type: "POST",
+                url: "DeleteExcludeKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Exclude keyword has been deleted successfully.'
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
     });
 
 </script>

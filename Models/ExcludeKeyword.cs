@@ -10,10 +10,8 @@ namespace WealthFlow.Models
     {
         public int ExcludeKeywordId { get; set; }
         public string Name { get; set; }
-        public int UserId { get; set; }
         public int CardId { get; set; }
 
         public virtual Card Card { get; set; }
-        public virtual User User { get; set; }
     }
 }
