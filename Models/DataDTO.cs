@@ -13,6 +13,7 @@ namespace WealthFlow
         public List<Transaction> Transactions { get; set; }
         public List<Category> Categories { get; set; }
         public List<Keyword> Keywords { get; set; }
+        public List<ExcludeKeyword> ExcludeKeywords { get; set; }
         public DataDTO(User user, List<Card> cards)
         {
             User = user;
@@ -34,11 +35,12 @@ namespace WealthFlow
             Categories = categories;
         }
 
-        public DataDTO(List<Keyword> keywords, List<Category> categories, List<Card> cards)
+        public DataDTO(List<Keyword> keywords, List<Category> categories, List<Card> cards, List<ExcludeKeyword> excludeKeywords)
         {
             Keywords = keywords;
             Categories = categories;
             Cards = cards;
+            ExcludeKeywords = excludeKeywords;
         }
 
        

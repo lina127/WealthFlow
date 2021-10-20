@@ -12,7 +12,6 @@ namespace WealthFlow.Models
         {
             Card = new HashSet<Card>();
             Category = new HashSet<Category>();
-            ExcludeKeyword = new HashSet<ExcludeKeyword>();
         }
 
         public int UserId { get; set; }
@@ -21,6 +20,5 @@ namespace WealthFlow.Models
 
         public virtual ICollection<Card> Card { get; set; }
         public virtual ICollection<Category> Category { get; set; }
-        public virtual ICollection<ExcludeKeyword> ExcludeKeyword { get; set; }
     }
 }
