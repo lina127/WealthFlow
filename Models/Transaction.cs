@@ -13,7 +13,7 @@ namespace WealthFlow.Models
         public string Merchant { get; set; }
         public decimal Amount { get; set; }
         public int CardId { get; set; }
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
         public string Note { get; set; }
 
         public virtual Card Card { get; set; }

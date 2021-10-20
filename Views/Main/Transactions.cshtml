@@ -77,6 +77,7 @@
             </td>
             <td>
                 <select class="form-control" id="category">
+                    <option value="">Uncategorized</option>
                     @foreach (var i in Model.Categories)
                     {
                         if (i.CategoryId == item.CategoryId)
