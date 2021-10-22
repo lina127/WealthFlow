@@ -47,6 +47,13 @@ namespace WealthFlow.Models
                     .IsUnicode(false)
                     .HasColumnName("cardNum");
 
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("(N'Active')")
+                    .IsFixedLength(true);
+
                 entity.Property(e => e.Type)
                     .IsRequired()
                     .HasMaxLength(20)
