@@ -1,7 +1,162 @@
 ﻿@{
     Layout = "../Shared/_Layout";
-}
-
-@{
     ViewData["Title"] = "Dashboard";
 }
+
+<div class="row">
+    <div class="col-12">
+        <h1>@ViewData["Title"]</h1>
+        <form class="row">
+            <div class="form-group col-md-4">
+                <label for="from">From</label>
+                <input type="date" class="form-control" id="from">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="to">To</label>
+                <input type="date" class="form-control" id="to">
+            </div>
+            <div class="form-group col-md-4" style="align-self:self-end;">
+                <button type="button" class="btn btn-primary" id="updateDate">Update</button>
+            </div>
+        </form>
+        <div class="alert alert-danger d-none" role="alert" id="alert-danger"></div>
+    </div>
+    <div class="col-6">
+        <h3>Expense per category</h3>
+        <small>Total: $<span id="GetTotalMountPerCategory_3_total"></span></small>
+        <canvas id="GetTotalMountPerCategory_3_canvas"></canvas>
+    </div>
+    <div class="col-6">
+        <h3>Income per category</h3>
+        <small>Total: $<span id="GetTotalMountPerCategory_2_total"></span></small>
+        <canvas id="GetTotalMountPerCategory_2_canvas"></canvas>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $("document").ready(function () {
+        // Initial dates
+        var now = new Date();
+        var day = ("0" + now.getDate()).slice(-2);
+        var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+        var toVal = now.getFullYear() + "-" + (month) + "-" + (day);
+        $("#to").val(toVal);
+
+        var month = ("0" + (now.getMonth())).slice(-2);
+        var fromVal = now.getFullYear() + "-" + (month) + "-" + (day);
+        $("#from").val(fromVal);
+
+        // chart variables
+        var chartArray = new Array();
+
+        renderData(fromVal, toVal);
+
+        $("#updateDate").click(function (e) {
+            e.preventDefault();
+            let newFrom = $("#from").val();
+            let newTo = $("#to").val();
+
+            renderData(newFrom, newTo);
+        });
+
+        function renderData(from, to) {
+            $.ajax({
+                type: "POST",
+                data: { from: from, to: to, dataType: 3 },
+                url: "/Dashboard/GetTotalMountPerCategory",
+                success: function (response) {
+                    if (response.length > 0) {
+                        $("#alert-danger").addClass("d-none");
+                        total = response.reduce((n, { categoryAmount }) => n + categoryAmount, 0);
+                        $("#GetTotalMountPerCategory_3_total").html(total);
+                        displayPieChart("GetTotalMountPerCategory_3_canvas", response, "Expense per category");
+                    } else {
+                        $("#alert-danger").removeClass("d-none");
+                        $("#alert-danger").html("No data to display");
+                    }
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                data: { from: from, to: to, dataType: 2 },
+                url: "/Dashboard/GetTotalMountPerCategory",
+                success: function (response) {
+                    if (response.length > 0) {
+                        $("#alert-danger").addClass("d-none");
+                        total = response.reduce((n, { categoryAmount }) => n + categoryAmount, 0);
+                        $("#GetTotalMountPerCategory_2_total").html(total);
+                        displayPieChart("GetTotalMountPerCategory_2_canvas", response);
+
+                    } else {
+                        $("#alert-danger").removeClass("d-none");
+                        $("#alert-danger").html("No data to display");
+                    }
+
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        function displayPieChart(selector, data) {
+            var canvas = document.getElementById(selector);
+            var ctx = canvas.getContext('2d');
+            
+            var labels = data.map(function (e) {
+                return e.category + "[$" + e.categoryAmount.toFixed(2) + "]";
+            });
+            var data = data.map(function (e) {
+                return e.categoryAmount.toFixed(2);
+            });
+            var colors = new Array();
+            for (let i = 0; i < data.length; i++) {
+                colors.push(dynamicColors());
+            }
+
+            var config = {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                    }
+                },
+            };
+
+            if (chartArray != undefined && chartArray.filter(e => e.id === selector).length > 0) {
+                index = chartArray.findIndex(o => o.id === selector);
+                console.log(chartArray[index].data)
+                chartArray[index].data.destroy();
+                chart = new Chart(ctx, config);
+                chartArray[index].data = chart;
+            } else {
+                chart = new Chart(ctx, config);
+                chartArray.push( ({ id: selector, data: chart }));
+            }
+            
+        }
+
+        var dynamicColors = function () {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";
+        };
+    });
+</script>
