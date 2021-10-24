@@ -6,28 +6,26 @@
 @model WealthFlow.DataDTO
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-md-6">
         <h1>@ViewData["Title"]</h1>
-        <div class="d-flex">
-            <form class="col-12">
-                <div class="form-group">
-                    <label for="newEmail">Email address</label>
-                    <input type="email" class="form-control" id="newEmail" aria-describedby="emailHelp" value="@Model.User.Email">
-                </div>
-                <div class="form-group">
-                    <label for="newPassword">Password</label>
-                    <input type="password" class="form-control" id="newPassword">
-                </div>
-                <button type="button" class="btn btn-primary" id="updateAccount">Update Account</button>
-            </form>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="row">
-            <div class="col-9">
-                <h1>Card Management</h1>
+        <form>
+            <div class="form-group">
+                <label for="newEmail">Email address</label>
+                <input type="email" class="form-control" id="newEmail" aria-describedby="emailHelp" value="@Model.User.Email">
             </div>
-            <div class="col-3">
+            <div class="form-group">
+                <label for="newPassword">Password</label>
+                <input type="password" class="form-control" id="newPassword">
+            </div>
+            <button type="button" class="btn btn-primary" id="updateAccount">Update Account</button>
+        </form>
+    </div>
+    <div class="col-md-6 mt-md-0 mt-4">
+        <div class="row">
+            <div class="col-8">
+                <h1>My Cards</h1>
+            </div>
+            <div class="col-4">
                 <button class="btn btn-primary float-right" id="showNewCardFormContainer">New Card</button>
             </div>
             <div class="col-12" id="newCardFormContainer">

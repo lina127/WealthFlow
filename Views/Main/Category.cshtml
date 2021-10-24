@@ -4,12 +4,12 @@
 }
 @model IEnumerable<WealthFlow.Models.Category>
 
-<div class="row">
-    <div class="col-9">
+<div class="row mb-5" style="align-items:center;">
+    <div class="col-6">
         <h1>@ViewData["Title"]</h1>
     </div>
-    <div class="col-3">
-        <button type="submit" class="btn btn-primary float-right" id="showNewCategoryFormContainer">New Category</button>
+    <div class="col-6">
+        <button type="submit" class="btn btn-primary float-right" id="showNewCategoryFormContainer"><i class="fas fa-plus"></i></button>
     </div>
     <div class="col-12" id="newCategoryFormContainer">
         <form class="form-inline">
@@ -60,7 +60,7 @@
                 </td>
                 
                 <td class="text-right">
-                    <button class="btn btn-primary updateCategory">Update</button>
+                    <button class="btn btn-primary updateCategory"><i class="fas fa-pen-square"></i></button>
                 </td>
             </tr>
         }

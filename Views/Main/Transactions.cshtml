@@ -5,13 +5,13 @@
 
 @model WealthFlow.DataDTO
 
-<div class="row">
+<div class="row mb-5" >
     <div class="col-6">
         <h1 class="d-inline">@ViewData["Title"]</h1><a href="#!" id="syncBtn"><i class="fas fa-sync"></i></a>
     </div>
     <div class="col-6">
         <form class="row row-cols-lg-auto g-3 align-items-center float-right">
-            <div class="col-md-8">
+            <div class="col-8">
                 <select class="form-control" id="cardId">
                     <option disabled selected>Select Card</option>
                     @foreach (var i in Model.Cards)
@@ -21,7 +21,7 @@
 
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-4">
                 <input type="file" id="csvFile" />
                 <button class="btn btn-primary" id="uploadCSV">Upload CSV</button>
             </div>
