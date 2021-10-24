@@ -38,7 +38,7 @@ namespace WealthFlow
             services.AddDbContext<WealthflowContext>(options =>
                 options.UseLazyLoadingProxies()
                 .UseSqlServer(Configuration.GetConnectionString("MyDbContextConnectionString")));
-
+            services.AddProgressiveWebApp();
 
 
         }

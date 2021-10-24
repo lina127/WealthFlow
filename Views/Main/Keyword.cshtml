@@ -4,12 +4,12 @@
 }
 @model WealthFlow.DataDTO
 
-<div class="row">
-    <div class="col-9">
+<div class="row mb-3" style="align-items: center;">
+    <div class="col-6">
         <h1>@ViewData["Title"]</h1>
     </div>
-    <div class="col-3">
-        <button class="btn btn-primary float-right" id="showNewKeywordFormContainer">New Keyword</button>
+    <div class="col-6">
+        <button class="btn btn-primary float-right" id="showNewKeywordFormContainer"><i class="fas fa-plus"></i></button>
     </div>
     <div class="col-12" id="newKeywordFormContainer">
         <form class="form-inline">
@@ -30,8 +30,8 @@
         </form>
     </div>
 </div>
-<table class="table" id="keywordTable">
-    <thead>
+<table class="table table-striped" id="keywordTable">
+    <thead class="thead-dark">
         <tr>
             <th>
                 Type
@@ -60,19 +60,19 @@
                 </td>
 
                 <td class="text-right">
-                    <button class="btn btn-primary updateKeyword">Update</button>
-                    <button class="btn btn-danger deleteKeyword">Delete</button>
+                    <button class="btn btn-primary updateKeyword"><i class="fas fa-pen-square"></i></button>
+                    <button class="btn btn-danger deleteKeyword"><i class="fas fa-trash-alt"></i></button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-<div class="row mt-5">
+<div class="row mt-5 mb-3">
     <div class="col-9">
         <h1>Exclude Keyword</h1>
     </div>
     <div class="col-3">
-        <button class="btn btn-primary float-right" id="showExcludeKeywordFormContainer">New Keyword Exclude</button>
+        <button class="btn btn-primary float-right" id="showExcludeKeywordFormContainer"><i class="fas fa-plus"></i></button>
     </div>
 
 </div>
@@ -119,8 +119,8 @@
     </table>
 </div>
 
-<table class="table">
-    <thead>
+<table class="table table-striped" id="excludeKeywordTable">
+    <thead class="thead-dark">
         <tr>
             <th>
                 Card
@@ -149,8 +149,8 @@
                 </td>
 
                 <td class="text-right">
-                    <button class="btn btn-primary updateExcludeKeyword">Update</button>
-                    <button class="btn btn-danger deleteExcludeKeyword">Delete</button>
+                    <button class="btn btn-primary updateExcludeKeyword"><i class="fas fa-pen-square"></i></button>
+                    <button class="btn btn-danger deleteExcludeKeyword"><i class="fas fa-trash-alt"></i></button>
                 </td>
             </tr>
         }
@@ -163,6 +163,7 @@
         $("#newExcludeKeywordFormContainer").hide();
 
         $("#keywordTable").DataTable();
+        $("#excludeKeywordTable").DataTable();
 
         $("#showNewKeywordFormContainer").click(function (e) {
             e.preventDefault();

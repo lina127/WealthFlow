@@ -45,4 +45,10 @@ namespace WealthFlow
 
        
     }
+
+    public class DashboardDTO
+    {
+        public string category { get; set; }
+        public decimal categoryAmount{ get; set; }
+    }
 }
