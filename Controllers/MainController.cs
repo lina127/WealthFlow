@@ -20,7 +20,7 @@ namespace WealthFlow.Controllers
         {
             if (IsSessionValid(out User? user))
             {
-                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
+                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId && o.Status == "Active").ToList();
                 
                 List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
 
@@ -43,7 +43,7 @@ namespace WealthFlow.Controllers
 
                 Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
 
-                string[] rows = csv.Split("\r\n");
+                string[] rows = csv.Split("\n");
                 foreach (var r in rows)
                 {
                     string[] columns = r.Split(",");
@@ -102,15 +102,24 @@ namespace WealthFlow.Controllers
                         if (columns[0] == "")
                             continue;
                         date = DateTime.Parse(columns[0]);
-                        merchant = columns[1].Trim();
-                        if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                        if (columns[1].Contains("\""))
                         {
-                            amount = Convert.ToDecimal(columns[2]) * -1;
+                            merchant = (columns[1] + columns[2]).Trim();
+                            if (columns[3] != null && columns[3] != "" && Convert.ToDecimal(columns[3]) > 0)
+                            {
+                                amount = Convert.ToDecimal(columns[3]) * -1;
+                            }
+                            else if (columns[4] != null && columns[4] != "" && Convert.ToDecimal(columns[4]) > 0)
+                            {
+                                amount = Convert.ToDecimal(columns[4]);
+                            }
                         }
                         else
                         {
+                            merchant = columns[1].Trim();
                             amount = Convert.ToDecimal(columns[3]);
                         }
+
                     }
                     // Exclude => skip to next item
                     if (excludeKeywords.Any(o => merchant.ToLower().Contains(o.Name.ToLower())))
@@ -230,8 +239,8 @@ namespace WealthFlow.Controllers
             {
                 List<Keyword> keyword = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
                 List<Category> category = _dbContext.Category.Where(o => o.UserId == user.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
-                List<ExcludeKeyword> excludeKeyword = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).OrderBy(o => o.Name).ToList();
-                List<Card> card = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
+                List<ExcludeKeyword> excludeKeyword = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId && o.Card.Status == "Active").OrderBy(o => o.Name).ToList();
+                List<Card> card = _dbContext.Card.Where(o => o.UserId == user.UserId && o.Status == "Active").ToList();
                 DataDTO dataDTO = new DataDTO(keyword, category, card, excludeKeyword);
                 return View(dataDTO);
             }
