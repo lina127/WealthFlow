@@ -24,7 +24,7 @@ namespace WealthFlow.Controllers
                 
                 List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
 
-                List<Category> categories = _dbContext.Category.ToList();
+                List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList(); 
 
                 DataDTO dataDTO = new(user, cards, transactions, categories);
                 return View(dataDTO);
@@ -42,8 +42,16 @@ namespace WealthFlow.Controllers
                 List<ExcludeKeyword> excludeKeywords = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).ToList();
 
                 Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
+                List<string> rows = new();
 
-                string[] rows = csv.Split("\n");
+                if (card.Bank.ToLower() == "cibc")
+                {
+                    rows = csv.Split("\n").ToList();
+                }
+                else if (card.Bank.ToLower() == "td")
+                {
+                    rows = csv.Split("\r\n").ToList();
+                }
                 foreach (var r in rows)
                 {
                     string[] columns = r.Split(",");
@@ -56,7 +64,7 @@ namespace WealthFlow.Controllers
                     {
                         if (columns[0] == "")
                             continue;
-                        date = DateTime.Parse(columns[0]);
+                        date = DateTime.ParseExact(columns[0], "MM/dd/yyyy", null);
                         merchant = columns[1].Trim();
                         if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
                         {
