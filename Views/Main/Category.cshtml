@@ -115,38 +115,39 @@
             });
         });
 
-        $(".updateCategory").click(function (e) {
-            e.preventDefault();
-            let categoryId = $(this)[0].parentNode.parentNode.id;
-            let name = $(this).closest('td').siblings().find('input')[0].value;
-            let type = $(this).closest('td').siblings().find('select')[0].value;
+    });
 
-            if (name == "") {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Empty field found.'
-                });
-                return;
-            }
+    $(document).on('click', '.updateCategory', function (e) {
+        e.preventDefault();
+        let categoryId = $(this)[0].parentNode.parentNode.id;
+        let name = $(this).closest('td').siblings().find('input')[0].value;
+        let type = $(this).closest('td').siblings().find('select')[0].value;
 
-            let data = { categoryId: categoryId, newName : name, newType : type };
-
-            $.ajax({
-                type: "POST",
-                url: "RenameCategory",
-                data: data,
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Category has been updated successfully.'
-                    });
-                },
-                failure: function (response) {
-                    alert(response.d);
-                }
+        if (name == "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Empty field found.'
             });
+            return;
+        }
+
+        let data = { categoryId: categoryId, newName: name, newType: type };
+
+        $.ajax({
+            type: "POST",
+            url: "RenameCategory",
+            data: data,
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Category has been updated successfully.'
+                });
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
         });
     });
 
