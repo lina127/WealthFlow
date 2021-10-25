@@ -4,158 +4,143 @@
 }
 @model WealthFlow.DataDTO
 
-<div class="row mb-3" style="align-items: center;">
-    <div class="col-6">
-        <h1>@ViewData["Title"]</h1>
-    </div>
-    <div class="col-6">
-        <button class="btn btn-primary float-right" id="showNewKeywordFormContainer"><i class="fas fa-plus"></i></button>
-    </div>
-    <div class="col-12" id="newKeywordFormContainer">
-        <form class="form-inline">
-            <label class="sr-only" for="type">Type</label>
-            <select class="form-control mb-2 mr-sm-4" id="categoryId">
-                <option disabled selected>-------------</option>
-                @foreach (var i in Model.Categories)
+<div class="row">
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-9">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-primary float-right" id="showNewKeywordFormContainer"><i class="fas fa-plus"></i></button>
+            </div>
+            <div id="newKeywordFormContainer">
+                <form class="form-inline">
+                    <label class="sr-only" for="type">Type</label>
+                    <select class="form-control mb-2 mr-sm-4" id="categoryId">
+                        <option disabled selected>-------------</option>
+                        @foreach (var i in Model.Categories)
+                        {
+                            <option value="@i.CategoryId">@i.Name</option>
+                        }
+
+                    </select>
+
+                    <label class="sr-only" for="name">Keyword</label>
+                    <input type="text" class="form-control mb-2 mr-sm-4" id="name" placeholder="Keyword" />
+
+                    <button type="button" class="btn btn-primary mb-2" id="addKeyword">Add Keyword</button>
+                </form>
+            </div>
+        </div>
+        <table class="table" id="keywordTable">
+            <thead>
+                <tr>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        Category
+                    </th>
+                    <th>
+                        Keyword
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Keywords)
                 {
-                    <option value="@i.CategoryId">@i.Name</option>
+                    <tr id="@item.KeywordId">
+                        <td>
+                            @item.Category.Type
+                        </td>
+                        <td>
+                            @item.Category.Name
+                        </td>
+                        <td>
+                            <input type="text" value="@item.Name" class="form-control" />
+                        </td>
+
+                        <td>
+                            <button class="btn btn-primary updateKeyword">Update</button>
+                            <button class="btn btn-danger deleteKeyword">Delete</button>
+                        </td>
+                    </tr>
                 }
-
-            </select>
-
-            <label class="sr-only" for="name">Keyword</label>
-            <input type="text" class="form-control mb-2 mr-sm-4" id="name" placeholder="Keyword" />
-
-            <button type="button" class="btn btn-primary mb-2" id="addKeyword">Add Keyword</button>
-        </form>
+            </tbody>
+        </table>
     </div>
-</div>
-<table class="table table-striped" id="keywordTable">
-    <thead class="thead-dark">
-        <tr>
-            <th>
-                Type
-            </th>
-            <th>
-                Category
-            </th>
-            <th>
-                Keyword
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Keywords)
-        {
-            <tr id="@item.KeywordId">
-                <td>
-                    @item.Category.Type
-                </td>
-                <td>
-                    @item.Category.Name
-                </td>
-                <td>
-                    <input type="text" value="@item.Name" class="form-control" />
-                </td>
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-9">
+                <h1>Exclude Keyword</h1>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-primary float-right" id="showExcludeKeywordFormContainer"><i class="fas fa-plus"></i></button>
+            </div>
 
-                <td class="text-right">
-                    <button class="btn btn-primary updateKeyword"><i class="fas fa-pen-square"></i></button>
-                    <button class="btn btn-danger deleteKeyword"><i class="fas fa-trash-alt"></i></button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-<div class="row mt-5 mb-3">
-    <div class="col-9">
-        <h1>Exclude Keyword</h1>
+        </div>
+        <div id="newExcludeKeywordFormContainer">
+            <form class="form-inline">
+                <label class="sr-only" for="type">Type</label>
+                <select class="form-control mb-2 mr-sm-4" id="cardId">
+                    <option disabled selected>-------------</option>
+                    @foreach (var i in Model.Cards)
+                    {
+                        <option value="@i.CardId">@i.CardNum - @i.Type [@i.Bank.ToUpper()]</option>
+                    }
+
+                </select>
+
+                <label class="sr-only" for="name">Keyword</label>
+                <input type="text" class="form-control mb-2 mr-sm-4" placeholder="Exclude Keyword" id="excludeKeywordName" />
+
+                <button type="button" class="btn btn-primary mb-2" id="addExcludeKeyword">Add Exclude Keyword</button>
+            </form>
+
+        </div>
+
+        <table class="table" id="excludeKeywordTable">
+            <thead>
+                <tr>
+                    <th>
+                        Card
+                    </th>
+                    <th>
+                        Excluding Keyword
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Model.ExcludeKeywords)
+                {
+                    string str = i.Card.CardNum.Substring(i.Card.CardNum.Length - 4)
+                + " - " + i.Card.Type + " ["
+                + i.Card.Bank.ToUpper() + "]";
+                    <tr id="@i.ExcludeKeywordId">
+                        <td>
+                            @str
+                        </td>
+
+
+                        <td>
+                            <input type="text" class="form-control" value="@i.Name" />
+                        </td>
+
+                        <td>
+                            <button class="btn btn-primary updateExcludeKeyword">Update</button>
+                            <button class="btn btn-danger deleteExcludeKeyword">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-    <div class="col-3">
-        <button class="btn btn-primary float-right" id="showExcludeKeywordFormContainer"><i class="fas fa-plus"></i></button>
-    </div>
-
-</div>
-
-
-<div class="col-12" id="newExcludeKeywordFormContainer">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Select Card
-                </th>
-                <th>
-                    Excluding Keyword
-                </th>
-                <th>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <select class="form-control" id="cardId">
-                                <option disabled selected>-------------</option>
-                                @foreach (var i in Model.Cards)
-                                {
-                                    <option value="@i.CardId">@i.CardNum - @i.Type [@i.Bank.ToUpper()]</option>
-                                }
-
-                            </select>
-                        </div>
-                    </form>
-                </td>
-                <td>
-                    <input type="text" class="form-control mb-2 mr-sm-4" placeholder="Exclude Keyword" id="excludeKeywordName" />
-                </td>
-                <td class="float-right">
-                    <button type="button" class="btn btn-primary mb-2" id="addExcludeKeyword">Add Exclude Keyword</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    
 </div>
 
-<table class="table table-striped" id="excludeKeywordTable">
-    <thead class="thead-dark">
-        <tr>
-            <th>
-                Card
-            </th>
-            <th>
-                Excluding Keyword
-            </th>
-            <th>
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var i in Model.ExcludeKeywords)
-        {
-            string str = i.Card.CardNum.Substring(i.Card.CardNum.Length - 4)
-        + " - " + i.Card.Type + " ["
-        + i.Card.Bank.ToUpper() + "]";
-            <tr id="@i.ExcludeKeywordId">
-                <td>
-                    @str
-                </td>
-
-
-                <td>
-                    <input type="text" class="form-control" value="@i.Name" />
-                </td>
-
-                <td class="text-right">
-                    <button class="btn btn-primary updateExcludeKeyword"><i class="fas fa-pen-square"></i></button>
-                    <button class="btn btn-danger deleteExcludeKeyword"><i class="fas fa-trash-alt"></i></button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
 
 <script type="text/javascript">
     $("document").ready(function () {
@@ -207,6 +192,64 @@
             });
         });
 
+        $(".updateKeyword").click(function (e) {
+            e.preventDefault();
+            let keywordId = $(this)[0].parentNode.parentNode.id;
+            let name = $(this).closest('td').siblings().find('input')[0].value;
+
+            if (name == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { keywordId: keywordId, newName: name };
+
+            $.ajax({
+                type: "POST",
+                url: "RenameKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Keyword has been updated successfully.'
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+        $(".deleteKeyword").click(function (e) {
+            e.preventDefault();
+            let keywordId = $(this)[0].parentNode.parentNode.id;
+
+            let data = { keywordId: keywordId };
+
+            $.ajax({
+                type: "POST",
+                url: "DeleteKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Keyword has been deleted successfully.'
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
         $("#showExcludeKeywordFormContainer").click(function (e) {
             e.preventDefault();
             $("#newExcludeKeywordFormContainer").show();
@@ -218,7 +261,7 @@
 
             let cardId = $("#cardId").val();
             let excludeKeywordName = $("#excludeKeywordName").val();
-            if (excludeKeywordName == "" || cardId < 1) {
+            if ( excludeKeywordName == "" || cardId < 1) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -247,119 +290,63 @@
                 }
             });
         });
-    });
 
-    $(document).on('click', '.updateKeyword', function (e) {
-        e.preventDefault();
-        let keywordId = $(this)[0].parentNode.parentNode.id;
-        let name = $(this).closest('td').siblings().find('input')[0].value;
+        $(".updateExcludeKeyword").click(function (e) {
+            e.preventDefault();
+            let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
+            let name = $(this).closest('td').siblings().find('input')[0].value;
 
-        if (name == "") {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Empty field found.'
+            if (name == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Empty field found.'
+                });
+                return;
+            }
+
+            let data = { excludeKeywordId: excludeKeywordId, newName: name };
+
+            $.ajax({
+                type: "POST",
+                url: "RenameExcludeKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Keyword has been updated successfully.'
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
             });
-            return;
-        }
-
-        let data = { keywordId: keywordId, newName: name };
-
-        $.ajax({
-            type: "POST",
-            url: "RenameKeyword",
-            data: data,
-            success: function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Keyword has been updated successfully.'
-                });
-            },
-            failure: function (response) {
-                alert(response.d);
-            }
         });
-    });
 
-    $(document).on('click', '.deleteKeyword', function (e) {
-        e.preventDefault();
-        let keywordId = $(this)[0].parentNode.parentNode.id;
+        $(".deleteExcludeKeyword").click(function (e) {
+            e.preventDefault();
+            let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
 
-        let data = { keywordId: keywordId };
+            let data = { excludeKeywordId: excludeKeywordId };
 
-        $.ajax({
-            type: "POST",
-            url: "DeleteKeyword",
-            data: data,
-            success: function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Keyword has been deleted successfully.'
-                }).then(function () {
-                    location.reload();
-                });
-            },
-            failure: function (response) {
-                alert(response.d);
-            }
-        });
-    });
-    $(document).on('click', '.updateExcludeKeyword', function (e) {
-        e.preventDefault();
-        let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
-        let name = $(this).closest('td').siblings().find('input')[0].value;
-
-        if (name == "") {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Empty field found.'
+            $.ajax({
+                type: "POST",
+                url: "DeleteExcludeKeyword",
+                data: data,
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Exclude keyword has been deleted successfully.'
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
             });
-            return;
-        }
-
-        let data = { excludeKeywordId: excludeKeywordId, newName: name };
-
-        $.ajax({
-            type: "POST",
-            url: "RenameExcludeKeyword",
-            data: data,
-            success: function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Keyword has been updated successfully.'
-                });
-            },
-            failure: function (response) {
-                alert(response.d);
-            }
-        });
-    });
-    $(document).on('click', '.deleteExcludeKeyword', function (e) {
-        e.preventDefault();
-        let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
-
-        let data = { excludeKeywordId: excludeKeywordId };
-
-        $.ajax({
-            type: "POST",
-            url: "DeleteExcludeKeyword",
-            data: data,
-            success: function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Exclude keyword has been deleted successfully.'
-                }).then(function () {
-                    location.reload();
-                });
-            },
-            failure: function (response) {
-                alert(response.d);
-            }
         });
     });
 
