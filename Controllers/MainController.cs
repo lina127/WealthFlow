@@ -20,11 +20,11 @@ namespace WealthFlow.Controllers
         {
             if (IsSessionValid(out User? user))
             {
-                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId && o.Status == "Active").ToList();
+                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
                 
                 List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
 
-                List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList(); 
+                List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList();
 
                 DataDTO dataDTO = new(user, cards, transactions, categories);
                 return View(dataDTO);
@@ -55,9 +55,8 @@ namespace WealthFlow.Controllers
                 foreach (var r in rows)
                 {
                     string[] columns = r.Split(",");
-                    Transaction transaction = new Transaction();
-                    DateTime date = new DateTime();
-                    string merchant = "";
+                    DateTime date = DateTime.Parse(columns[0]);
+                    string merchant = columns[1].Trim();
                     decimal amount = 0;
 
                     if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
@@ -137,32 +136,13 @@ namespace WealthFlow.Controllers
                     transaction.Merchant = merchant;
                     transaction.Amount = amount;
                     transaction.CardId = cardId;
+                    transaction.CategoryId = 3; // Others
                     transaction.Note = "";
 
-                    // Assign to a category if valid
-                    foreach (var k in keywords)
-                    {
-                        if (merchant.ToLower().Contains(k.Name.ToLower()))
-                        {
-                            transaction.CategoryId = k.CategoryId;
-                            break;
-                        }
-                    }
-
-                    List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
-
-                    if(!transactions.Any(o => o.Date == date && o.Merchant == merchant && o.Amount == amount && o.CardId == cardId))
-                    {
-                        _dbContext.Transaction.Add(transaction);
-                        _dbContext.SaveChanges();
-                    }
-
-                    
+                    _dbContext.Transaction.Add(transaction);
+                    _dbContext.SaveChanges();
                 }
-
-                
             }
-            
         }
 
         public void UpdateTransaction(int transactionId, string note, int categoryId)
@@ -172,39 +152,6 @@ namespace WealthFlow.Controllers
             transaction.CategoryId = categoryId;
             _dbContext.Update(transaction);
             _dbContext.SaveChanges();
-        }
-
-        public void SyncTransactions()
-        {
-            User user = GetCurrentUser();
-
-            List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
-            List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList();
-            List<Keyword> keywords = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).ToList();
-            List<ExcludeKeyword> excludeKeywords = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).ToList();
-
-            foreach(var t in transactions)
-            {
-                // Exclude => skip to next item
-                if (excludeKeywords.Any(o => t.Merchant.ToLower().Contains(o.Name.ToLower())))
-                {
-                    _dbContext.Transaction.Remove(t);
-                    _dbContext.SaveChanges();
-                }
-                foreach (var k in keywords)
-                {
-                    if (t.Merchant.ToLower().Contains(k.Name.ToLower()))
-                    {
-                        if(t.CategoryId != k.CategoryId)
-                        {
-                            t.CategoryId = k.CategoryId;
-                            _dbContext.Transaction.Update(t);
-                            _dbContext.SaveChanges();
-                        }
-                        
-                    }
-                }
-            }
         }
 
         // Category
@@ -247,8 +194,8 @@ namespace WealthFlow.Controllers
             {
                 List<Keyword> keyword = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
                 List<Category> category = _dbContext.Category.Where(o => o.UserId == user.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
-                List<ExcludeKeyword> excludeKeyword = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId && o.Card.Status == "Active").OrderBy(o => o.Name).ToList();
-                List<Card> card = _dbContext.Card.Where(o => o.UserId == user.UserId && o.Status == "Active").ToList();
+                List<ExcludeKeyword> excludeKeyword = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).OrderBy(o => o.Name).ToList();
+                List<Card> card = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
                 DataDTO dataDTO = new DataDTO(keyword, category, card, excludeKeyword);
                 return View(dataDTO);
             }
