@@ -106,7 +106,7 @@ namespace WealthFlow.Models
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(30)
+                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
 

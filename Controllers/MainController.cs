@@ -43,7 +43,7 @@ namespace WealthFlow.Controllers
 
                 Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
 
-                string[] rows = csv.Split("\r\n");
+                string[] rows = csv.Split("\n");
                 foreach (var r in rows)
                 {
                     string[] columns = r.Split(",");
@@ -102,22 +102,24 @@ namespace WealthFlow.Controllers
                         if (columns[0] == "")
                             continue;
                         date = DateTime.Parse(columns[0]);
-                        merchant = columns[1].Trim();
-                        if (columns[3] != null && columns[3] != "" &&  columns[5] != null && columns[5] != "" && Convert.ToDecimal(columns[3]) > 0)
+                        if (columns[1].Contains("\""))
                         {
-                            amount = Convert.ToDecimal(columns[3]) * -1;
-                        }
-                        else
-                        {
-                            if (columns[5] != null || columns[5] != "")
+                            merchant = (columns[1] + columns[2]).Trim();
+                            if (columns[3] != null && columns[3] != "" && Convert.ToDecimal(columns[3]) > 0)
+                            {
+                                amount = Convert.ToDecimal(columns[3]) * -1;
+                            }
+                            else if (columns[4] != null && columns[4] != "" && Convert.ToDecimal(columns[4]) > 0)
                             {
                                 amount = Convert.ToDecimal(columns[4]);
                             }
-                            else
-                            {
-                                amount = Convert.ToDecimal(columns[3]);
-                            }
                         }
+                        else
+                        {
+                            merchant = columns[1].Trim();
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
+
                     }
                     // Exclude => skip to next item
                     if (excludeKeywords.Any(o => merchant.ToLower().Contains(o.Name.ToLower())))
