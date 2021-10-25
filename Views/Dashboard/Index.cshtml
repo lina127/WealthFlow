@@ -126,7 +126,7 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: colors
+                        backgroundColor: ["#58F5E8", "#BC98F5", "#7FF57F", "#F59567", "#F5F073"]
                     }]
                 },
                 options: {
@@ -141,7 +141,6 @@
 
             if (chartArray != undefined && chartArray.filter(e => e.id === selector).length > 0) {
                 index = chartArray.findIndex(o => o.id === selector);
-                console.log(chartArray[index].data)
                 chartArray[index].data.destroy();
                 chart = new Chart(ctx, config);
                 chartArray[index].data = chart;
