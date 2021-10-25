@@ -5,15 +5,16 @@
 
 @model WealthFlow.DataDTO
 
-<div class="row mb-5" >
+<div class="row">
     <div class="col-6">
-        <h1 class="d-inline">@ViewData["Title"]</h1><a href="#!" id="syncBtn"><i class="fas fa-sync"></i></a>
+        <h1>@ViewData["Title"]</h1>
     </div>
     <div class="col-6">
-        <form class="row row-cols-lg-auto g-3 align-items-center float-right">
-            <div class="col-8">
+        <form>
+            <div class="form-group">
+                <label for="type">Card #</label>
                 <select class="form-control" id="cardId">
-                    <option disabled selected>Select Card</option>
+                    <option disabled selected>-------------</option>
                     @foreach (var i in Model.Cards)
                     {
                         <option value="@i.CardId">@i.CardNum - @i.Type [@i.Bank.ToUpper()]</option>
@@ -21,24 +22,18 @@
 
                 </select>
             </div>
-            <div class="col-4">
-                <input type="file" id="csvFile" />
-                <button class="btn btn-primary" id="uploadCSV">Upload CSV</button>
-            </div>
         </form>
-        
+        <input type="file" id="csvFile" />
+        <button class="btn btn-primary" id="uploadCSV">Upload CSV</button>
     </div>
 </div>
 
 
-<table class="table table-striped" id="transactionTable">
-    <thead class="thead-dark">
+<table class="table" id="transactionTable">
+    <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(o => o.Transactions[0].Date)
-            </th>
-            <th>
-                Card
             </th>
             <th>
                 @Html.DisplayNameFor(o => o.Transactions[0].Merchant)
@@ -64,46 +59,62 @@
                 @item.Date.ToString("yyyy-MM-dd")
             </td>
             <td>
-                @item.Card.Bank.ToUpper() - @item.Card.Type
-            </td>
-            <td>
                 @item.Merchant
             </td>
             <td>
-                @{
-                    if (item.Amount < 0)
-                    {
-                        decimal amount = item.Amount * -1;
-                        <span class="text-danger">($@String.Format("{0:0.00}", amount))</span>
-                    }
-                    else
-                    {
-                        <span class="text-success">$@String.Format("{0:0.00}", @item.Amount)</span>
-                    }
+                @{ 
+                        if(item.Amount < 0)
+                        {
+                            decimal amount = item.Amount * -1;
+                                <span class="text-danger">($@String.Format("{0:0.00}", amount))</span>
                 }
-
+                else
+                {
+            <span class="text-success">$@String.Format("{0:0.00}", @item.Amount)</span>
+                }
+                }
+               
             </td>
             <td>
                 <select class="form-control" id="category">
-                    <option value="">Uncategorized</option>
-                    @foreach (var i in Model.Categories)
+                    @if (item.Amount < 0)
                     {
-                        if (i.CategoryId == item.CategoryId)
+                        @foreach (var i in Model.Categories.Where(o => o.Type == "Expense"))
                         {
-                            <option value="@i.CategoryId" selected>@i.Name</option>
+                            if (i.CategoryId == item.CategoryId)
+                            {
+                                <option value="@i.CategoryId" selected>@i.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@i.CategoryId">@i.Name</option>
+                            }
                         }
-                        else
+
+
+
+                    }
+                    else
+                    {
+                        @foreach (var i in Model.Categories.Where(o => o.Type == "Income"))
                         {
-                            <option value="@i.CategoryId">@i.Name</option>
+                            if (i.CategoryId == item.CategoryId)
+                            {
+                                <option value="@i.CategoryId" selected>@i.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@i.CategoryId">@i.Name</option>
+                            }
                         }
                     }
+
                 </select>
             </td>
-
             <td>
                 <input type="text" class="form-control" value="@item.Note" />
             </td>
-            <td class="text-right">
+            <td>
                 <button class="btn btn-primary updateTransaction">Update</button>
             </td>
         </tr>
@@ -116,9 +127,7 @@
         var csv = "";
         $("#csvFile").hide();
 
-        $("#transactionTable").DataTable({
-            "order": [[0, "desc"]]
-        });
+        $("#transactionTable").DataTable();
 
         $("#uploadCSV").click(function (e) {
             e.preventDefault();
@@ -141,6 +150,9 @@
 
             if (e.target.files != undefined) {
                 var reader = new FileReader();
+                
+                
+                
                 reader.onload = function (e) {
                     csv = e.target.result;
                 }
@@ -152,13 +164,7 @@
                         url: "AddTransaction",
                         data: { csv: csv, cardId: cardId },
                         success: function (response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: 'Transactions have been added.'
-                            }).then(function () {
-                                location.reload();
-                            });
+
                         },
                         failure: function (response) {
                             alert(response.d);
@@ -169,20 +175,24 @@
             }
         });
 
-        
-
-        $("#syncBtn").click(function (e) {
+        $(".updateTransaction").click(function (e) {
             e.preventDefault();
+            let transactionId = $(this)[0].parentNode.parentNode.id;
+            let note = $(this).closest('td').siblings().find('input')[0].value;
+            let categoryId = $(this).closest('td').siblings().find('select')[0].value;
+
+            let data = { transactionId : transactionId, note: note, categoryId: categoryId };
+
+
             $.ajax({
                 type: "POST",
-                url: "SyncTransactions",
+                url: "UpdateTransaction",
+                data: data,
                 success: function (response) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
-                        text: 'Synced successfully'
-                    }).then(function () {
-                        location.reload();
+                        text: 'Updated successfully'
                     });
                 },
                 failure: function (response) {
@@ -191,29 +201,4 @@
             });
         });
     });
-
-    $(document).on('click', '.updateTransaction', function (e) {
-        e.preventDefault();
-        let transactionId = $(this)[0].parentNode.parentNode.id;
-        let note = $(this).closest('td').siblings().find('input')[0].value ?? "";
-        let categoryId = $(this).closest('td').siblings().find('select')[0].value;
-
-        let data = { transactionId: transactionId, note: note, categoryId: categoryId };
-        $.ajax({
-            type: "POST",
-            url: "UpdateTransaction",
-            data: data,
-            success: function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Updated successfully'
-                });
-            },
-            failure: function (response) {
-                alert(response.d);
-            }
-        });
-    });
-
 </script> 
