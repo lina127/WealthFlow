@@ -34,28 +34,104 @@ namespace WealthFlow.Controllers
 
         public void AddTransaction(string csv, int cardId)
         {
-            Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
-            if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
+            User user = GetCurrentUser();
+            if(user is not null)
             {
-                List<string> skipList = new();
-                skipList.Add("TD VISA PREAUTH PYMT");
-                skipList.Add("HB033 TFR-TO C/C");
-                string[] rows = csv.Split("\r\n");
+                List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList();
+                List<Keyword> keywords = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).ToList();
+                List<ExcludeKeyword> excludeKeywords = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).ToList();
+
+                Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
+                List<string> rows = new();
+
+                if (card.Bank.ToLower() == "cibc")
+                {
+                    rows = csv.Split("\n").ToList();
+                }
+                else if (card.Bank.ToLower() == "td")
+                {
+                    rows = csv.Split("\r\n").ToList();
+                }
                 foreach (var r in rows)
                 {
                     string[] columns = r.Split(",");
                     DateTime date = DateTime.Parse(columns[0]);
                     string merchant = columns[1].Trim();
                     decimal amount = 0;
-                    if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+
+                    if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
                     {
-                        amount = Convert.ToDecimal(columns[2]) * -1;
+                        if (columns[0] == "")
+                            continue;
+                        date = DateTime.ParseExact(columns[0], "MM/dd/yyyy", null);
+                        merchant = columns[1].Trim();
+                        if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                        {
+                            amount = Convert.ToDecimal(columns[2]) * -1;
+                        }
+                        else
+                        {
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
                     }
-                    else
+                    else if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "credit")
                     {
-                        amount = Convert.ToDecimal(columns[3]);
+                        if (columns[0] == "")
+                            continue;
+                        date = DateTime.Parse(columns[0]);
+                        merchant = columns[1].Trim();
+                        if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                        {
+                            amount = Convert.ToDecimal(columns[2]) * -1;
+                        }
+                        else
+                        {
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
                     }
-                    Transaction transaction = new Transaction();
+                    else if (card.Bank.ToLower() == "cibc" && card.Type.ToLower() == "debit")
+                    {
+                        if (columns[0] == "")
+                            continue;
+                        date = DateTime.Parse(columns[0]);
+                        merchant = columns[1].Trim();
+                        if (columns[2] != null && columns[2] != "" && Convert.ToDecimal(columns[2]) > 0)
+                        {
+                            amount = Convert.ToDecimal(columns[2]) * -1;
+                        }
+                        else
+                        {
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
+                    }
+                    else if (card.Bank.ToLower() == "cibc" && card.Type.ToLower() == "credit")
+                    {
+                        if (columns[0] == "")
+                            continue;
+                        date = DateTime.Parse(columns[0]);
+                        if (columns[1].Contains("\""))
+                        {
+                            merchant = (columns[1] + columns[2]).Trim();
+                            if (columns[3] != null && columns[3] != "" && Convert.ToDecimal(columns[3]) > 0)
+                            {
+                                amount = Convert.ToDecimal(columns[3]) * -1;
+                            }
+                            else if (columns[4] != null && columns[4] != "" && Convert.ToDecimal(columns[4]) > 0)
+                            {
+                                amount = Convert.ToDecimal(columns[4]);
+                            }
+                        }
+                        else
+                        {
+                            merchant = columns[1].Trim();
+                            amount = Convert.ToDecimal(columns[3]);
+                        }
+
+                    }
+                    // Exclude => skip to next item
+                    if (excludeKeywords.Any(o => merchant.ToLower().Contains(o.Name.ToLower())))
+                        continue;
+
                     transaction.Date = date;
                     transaction.Merchant = merchant;
                     transaction.Amount = amount;
