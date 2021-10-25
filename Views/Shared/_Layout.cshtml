@@ -30,16 +30,16 @@
                         <a class="navbar-brand @(ViewData["Title"] == "Dashboard" ? "active" : "")" href="/Dashboard">WealthFlow</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark @(ViewData["Title"] == "MyAccount" ? "active" : "")"" asp-area="" href="/User/MyAccount">My Account</a>
+                        <a class="nav-link text-dark @(ViewData["Title"] == "My Account" ? "active" : "")" href="/User/MyAccount">My Account</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" href="/Main/Transactions">Transactions</a>
+                        <a class="nav-link text-dark @(ViewData["Title"] == "Transactions" ? "active" : "")" href="/Main/Transactions">Transactions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" href="/Main/Category">Category</a>
+                        <a class="nav-link text-dark @(ViewData["Title"] == "Category" ? "active" : "")" href="/Main/Category">Category</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" href="/Main/Keyword">Keyword</a>
+                        <a class="nav-link text-dark @(ViewData["Title"] == "Keyword" ? "active" : "")" href="/Main/Keyword">Keyword</a>
                     </li>
                 </ul>
             </div>
