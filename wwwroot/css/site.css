@@ -1,3 +1,7 @@
 ﻿.active {
     color: red !important;
 }
+
+.pointer{
+    cursor: pointer !important;
+}

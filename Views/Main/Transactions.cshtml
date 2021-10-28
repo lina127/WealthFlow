@@ -76,7 +76,8 @@
                
             </td>
             <td>
-                <select class="form-control" id="category">
+                <span class="categorySpan pointer">@(item.Category != null ? item.Category.Name : "Uncategorized")</span>
+                <select class="form-control categorySelect" id="category">
                     @if (item.Amount < 0)
                     {
                         @foreach (var i in Model.Categories.Where(o => o.Type == "Expense"))
@@ -124,10 +125,18 @@
 <div class="csv"></div>
 <script type="text/javascript">
     $("document").ready(function () {
+        $(".categorySelect").hide();
+        $(".categorySpan").click(function (e) {
+            e.preventDefault();
+            $(this).hide();
+            $(this).siblings('.categorySelect').show();
+        });
         var csv = "";
         $("#csvFile").hide();
 
-        $("#transactionTable").DataTable();
+        $("#transactionTable").DataTable({
+            "order": [[0, "desc"]]
+        });
 
         $("#uploadCSV").click(function (e) {
             e.preventDefault();
@@ -174,31 +183,38 @@
                 
             }
         });
+    });
 
-        $(".updateTransaction").click(function (e) {
-            e.preventDefault();
-            let transactionId = $(this)[0].parentNode.parentNode.id;
-            let note = $(this).closest('td').siblings().find('input')[0].value;
-            let categoryId = $(this).closest('td').siblings().find('select')[0].value;
+    $(document).on('click', '.updateTransaction', function (e) {
+        e.preventDefault();
+        let category = $(this).closest('td').siblings().find(".categorySpan").eq(0);
+        let categoryText = $(this).closest('td').siblings().find('option:selected')[0].text;
+        let transactionId = $(this)[0].parentNode.parentNode.id;
+        let note = $(this).closest('td').siblings().find('input')[0].value;
+        let categoryId = $(this).closest('td').siblings().find('select')[0].value;
 
-            let data = { transactionId : transactionId, note: note, categoryId: categoryId };
+        let data = { transactionId: transactionId, note: note, categoryId: categoryId };
 
 
-            $.ajax({
-                type: "POST",
-                url: "UpdateTransaction",
-                data: data,
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Updated successfully'
-                    });
-                },
-                failure: function (response) {
-                    alert(response.d);
-                }
-            });
+        $.ajax({
+            type: "POST",
+            url: "UpdateTransaction",
+            data: data,
+            success: function (response) {
+                category.html(categoryText);
+                $(".categorySelect").hide();
+                $(".categorySpan").show();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Updated successfully'
+                });
+                
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
         });
     });
 </script> 

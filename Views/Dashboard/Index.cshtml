@@ -23,13 +23,27 @@
     </div>
     <div class="col-md-6">
         <h3>Expense per category</h3>
-        <small>Total: $<span id="GetTotalMountPerCategory_3_total"></span></small>
-        <canvas id="GetTotalMountPerCategory_3_canvas"></canvas>
+        <small>Total: $<span id="GetTotalAmountPerCategory_3_total"></span></small>
+        <canvas id="GetTotalAmountPerCategory_3_canvas"></canvas>
     </div>
     <div class="col-md-6">
         <h3>Income per category</h3>
-        <small>Total: $<span id="GetTotalMountPerCategory_2_total"></span></small>
-        <canvas id="GetTotalMountPerCategory_2_canvas"></canvas>
+        <small>Total: $<span id="GetTotalAmountPerCategory_2_total"></span></small>
+        <canvas id="GetTotalAmountPerCategory_2_canvas"></canvas>
+    </div>
+
+    <div class="col-md-4">
+        <h3>Total per month</h3>
+        <canvas id="GetTotalAmountPerMonth_1_canvas"></canvas>
+    </div>
+
+    <div class="col-md-4">
+        <h3>Income per month</h3>
+        <canvas id="GetTotalAmountPerMonth_2_canvas"></canvas>
+    </div>
+    <div class="col-md-4">
+        <h3>Expense per month</h3>
+        <canvas id="GetTotalAmountPerMonth_3_canvas"></canvas>
     </div>
 
 </div>
@@ -48,6 +62,25 @@
         var fromVal = now.getFullYear() + "-" + (month) + "-" + (day);
         $("#from").val(fromVal);
 
+        // Get last transaction date
+        $.ajax({
+            type: "POST",
+            url: "/Main/GetLastTransaction",
+            success: function (response) {
+                if (response.$id > 0) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'info',
+                        title: 'Last transaction: ' + response.date.substring(0, 10),
+                        showConfirmButton: true
+                    })
+                }
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
+        });
+
         // chart variables
         var chartArray = new Array();
 
@@ -65,13 +98,14 @@
             $.ajax({
                 type: "POST",
                 data: { from: from, to: to, dataType: 3 },
-                url: "/Dashboard/GetTotalMountPerCategory",
+                url: "/Dashboard/GetTotalAmountPerCategory",
                 success: function (response) {
-                    if (response.length > 0) {
+                    if (response.$values.length > 0) {
+                        response = response.$values
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { categoryAmount }) => n + categoryAmount, 0);
-                        $("#GetTotalMountPerCategory_3_total").html(total);
-                        displayPieChart("GetTotalMountPerCategory_3_canvas", response, "Expense per category");
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        $("#GetTotalAmountPerCategory_3_total").html(total);
+                        displayTotalPerCategoryChart("GetTotalAmountPerCategory_3_canvas", response, "Expense per category");
                     } else {
                         $("#alert-danger").removeClass("d-none");
                         $("#alert-danger").html("No data to display");
@@ -85,13 +119,83 @@
             $.ajax({
                 type: "POST",
                 data: { from: from, to: to, dataType: 2 },
-                url: "/Dashboard/GetTotalMountPerCategory",
+                url: "/Dashboard/GetTotalAmountPerCategory",
                 success: function (response) {
-                    if (response.length > 0) {
+                    if (response.$values.length > 0) {
+                        response = response.$values
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { categoryAmount }) => n + categoryAmount, 0);
-                        $("#GetTotalMountPerCategory_2_total").html(total);
-                        displayPieChart("GetTotalMountPerCategory_2_canvas", response);
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        $("#GetTotalAmountPerCategory_2_total").html(total);
+                        displayTotalPerCategoryChart("GetTotalAmountPerCategory_2_canvas", response);
+
+                    } else {
+                        $("#alert-danger").removeClass("d-none");
+                        $("#alert-danger").html("No data to display");
+                    }
+
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                data: { from: from, to: to, dataType: 1 },
+                url: "/Dashboard/GetTotalAmountPerMonth",
+                success: function (response) {
+                    if (response.$values.length > 0) {
+                        response = response.$values
+                        $("#alert-danger").addClass("d-none");
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        $("#GetTotalAmountPerMonth_1_total").html(total);
+                        displayTotalPerMonthChart("GetTotalAmountPerMonth_1_canvas", response);
+
+                    } else {
+                        $("#alert-danger").removeClass("d-none");
+                        $("#alert-danger").html("No data to display");
+                    }
+
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                data: { from: from, to: to, dataType: 2},
+                url: "/Dashboard/GetTotalAmountPerMonth",
+                success: function (response) {
+                    if (response.$values.length > 0) {
+                        response = response.$values
+                        $("#alert-danger").addClass("d-none");
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        $("#GetTotalAmountPerMonth_2_total").html(total);
+                        displayTotalPerMonthChart("GetTotalAmountPerMonth_2_canvas", response);
+
+                    } else {
+                        $("#alert-danger").removeClass("d-none");
+                        $("#alert-danger").html("No data to display");
+                    }
+                    
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                data: { from: from, to: to, dataType: 3 },
+                url: "/Dashboard/GetTotalAmountPerMonth",
+                success: function (response) {
+                    if (response.$values.length > 0) {
+                        response = response.$values
+                        $("#alert-danger").addClass("d-none");
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        $("#GetTotalAmountPerMonth_3_total").html(total);
+                        displayTotalPerMonthChart("GetTotalAmountPerMonth_3_canvas", response);
 
                     } else {
                         $("#alert-danger").removeClass("d-none");
@@ -105,15 +209,15 @@
             });
         }
 
-        function displayPieChart(selector, data) {
+        function displayTotalPerCategoryChart(selector, data) {
             var canvas = document.getElementById(selector);
             var ctx = canvas.getContext('2d');
             
             var labels = data.map(function (e) {
-                return e.category + "[$" + e.categoryAmount.toFixed(2) + "]";
+                return e.category + "[$" + e.amount.toFixed(2) + "]";
             });
             var data = data.map(function (e) {
-                return e.categoryAmount.toFixed(2);
+                return e.amount.toFixed(2);
             });
             var colors = new Array();
             for (let i = 0; i < data.length; i++) {
@@ -148,7 +252,55 @@
                 chart = new Chart(ctx, config);
                 chartArray.push( ({ id: selector, data: chart }));
             }
-            
+        }
+
+        function displayTotalPerMonthChart(selector, data) {
+            var canvas = document.getElementById(selector);
+            var ctx = canvas.getContext('2d');
+
+            var labels = data.map(function (e) {
+                return e.month;
+            });
+            var data = data.map(function (e) {
+                return e.amount.toFixed(2);
+            });
+            var colors = new Array();
+            for (let i = 0; i < data.length; i++) {
+                colors.push(dynamicColors());
+            }
+
+            var config = {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ["#58F5E8", "#BC98F5", "#7FF57F", "#F59567", "#F5F073"]
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                },
+            };
+
+            if (chartArray != undefined && chartArray.filter(e => e.id === selector).length > 0) {
+                index = chartArray.findIndex(o => o.id === selector);
+                chartArray[index].data.destroy();
+                chart = new Chart(ctx, config);
+                chartArray[index].data = chart;
+            } else {
+                chart = new Chart(ctx, config);
+                chartArray.push(({ id: selector, data: chart }));
+            }
         }
 
         var dynamicColors = function () {
