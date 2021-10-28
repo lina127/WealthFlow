@@ -55,8 +55,9 @@ namespace WealthFlow.Controllers
                 foreach (var r in rows)
                 {
                     string[] columns = r.Split(",");
-                    DateTime date = DateTime.Parse(columns[0]);
-                    string merchant = columns[1].Trim();
+                    DateTime date = new DateTime();
+                    string merchant = "";
+                    Transaction transaction = new Transaction();
                     decimal amount = 0;
 
                     if (card.Bank.ToLower() == "td" && card.Type.ToLower() == "debit")
@@ -136,11 +137,26 @@ namespace WealthFlow.Controllers
                     transaction.Merchant = merchant;
                     transaction.Amount = amount;
                     transaction.CardId = cardId;
-                    transaction.CategoryId = 3; // Others
                     transaction.Note = "";
 
-                    _dbContext.Transaction.Add(transaction);
-                    _dbContext.SaveChanges();
+                    // Assign to a category if valid
+                    foreach (var k in keywords)
+                    {
+                        if (merchant.ToLower().Contains(k.Name.ToLower()))
+                        {
+                            transaction.CategoryId = k.CategoryId;
+                            break;
+                        }
+                    }
+
+                    List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
+
+                    if (!transactions.Any(o => o.Date == date && o.Merchant == merchant && o.Amount == amount && o.CardId == cardId))
+                    {
+                        _dbContext.Transaction.Add(transaction);
+                        _dbContext.SaveChanges();
+                    }
+
                 }
             }
         }
