@@ -170,6 +170,17 @@ namespace WealthFlow.Controllers
             _dbContext.SaveChanges();
         }
 
+        [HttpPost]
+        public JsonResult GetLastTransaction()
+        {
+            if (IsSessionValid(out User? user))
+            {
+                Transaction transaction = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).OrderBy(o => o.Date).LastOrDefault();
+                return Json(transaction);
+            }
+            return null;
+        }
+
         // Category
         public IActionResult Category()
         {
