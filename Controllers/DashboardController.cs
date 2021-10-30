@@ -31,7 +31,7 @@ namespace WealthFlow.Controllers
             // Total amount per category
             if (dataType == 1)
             {
-                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Date >= from && o.Date <= to).GroupBy(o => o.Category.Name).Select(o => new DashboardDTO { category = o.Key ?? "Uncategorized", amount = o.Sum(x => x.Amount) }).ToList();
+                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Date >= from && o.Date <= to).GroupBy(o => o.Category.Name).Select(o => new DashboardDTO { Category = o.Key ?? "Uncategorized", Amount = o.Sum(x => x.Amount) }).ToList();
 
                 return Json(data);
             }
@@ -39,7 +39,7 @@ namespace WealthFlow.Controllers
             // Total income per category
             else if (dataType == 2)
             {
-                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount > 0 && o.Date >= from && o.Date <= to).GroupBy(o => o.Category.Name).Select(o => new DashboardDTO { category = o.Key ?? "Uncategorized", amount = o.Sum(x => x.Amount) }).ToList();
+                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount > 0 && o.Date >= from && o.Date <= to).GroupBy(o => o.Category.Name).Select(o => new DashboardDTO { Category = o.Key ?? "Uncategorized", Amount = o.Sum(x => x.Amount) }).ToList();
 
                 return Json(data);
             }
@@ -47,7 +47,7 @@ namespace WealthFlow.Controllers
             // Total expense per category
             else if (dataType == 3)
             {
-                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount < 0 && o.Date >= from && o.Date <= to).GroupBy(o => o.Category.Name).Select(o => new DashboardDTO { category = o.Key ?? "Uncategorized", amount = o.Sum(x => (x.Amount * -1)) }).ToList();
+                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount < 0 && o.Date >= from && o.Date <= to).GroupBy(o => o.Category.Name).Select(o => new DashboardDTO { Category = o.Key ?? "Uncategorized", Amount = o.Sum(x => (x.Amount * -1)) }).ToList();
 
                 return Json(data);
             }
