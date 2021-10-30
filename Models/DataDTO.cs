@@ -48,9 +48,9 @@ namespace WealthFlow
 
     public class DashboardDTO
     {
-        public string category { get; set; }
-        public decimal amount{ get; set; }
-        public int month { get; set; }
-        public int year { get; set; }
+        public string Category { get; set; }
+        public decimal Amount{ get; set; }
+        public int Month { get; set; }
+        public int Year { get; set; }
     }
 }

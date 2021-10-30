@@ -5,3 +5,7 @@
 .pointer{
     cursor: pointer !important;
 }
+
+.vertical-align-center {
+    align-self: center !important;
+}
