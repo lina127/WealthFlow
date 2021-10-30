@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-6">
-        <h1>@ViewData["Title"]</h1>
+        <h1>@ViewData["Title"]</h1><a href="#!" id="syncBtn"><i class="fas fa-sync"></i></a>
     </div>
     <div class="col-6">
         <form>
@@ -66,7 +66,7 @@
                         if(item.Amount < 0)
                         {
                             decimal amount = item.Amount * -1;
-                                <span class="text-danger">($@String.Format("{0:0.00}", amount))</span>
+                                <span class="text-danger">$@String.Format("{0:0.00}", amount)</span>
                 }
                 else
                 {
@@ -159,21 +159,23 @@
 
             if (e.target.files != undefined) {
                 var reader = new FileReader();
-                
-                
-                
                 reader.onload = function (e) {
                     csv = e.target.result;
                 }
                 reader.readAsText(e.target.files.item(0));
                 reader.onloadend = function (e) {
-                    console.log(csv);
                     $.ajax({
                         type: "POST",
                         url: "AddTransaction",
                         data: { csv: csv, cardId: cardId },
                         success: function (response) {
-
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Transactions has been added.'
+                            }).then(function () {
+                                location.reload();
+                            });
                         },
                         failure: function (response) {
                             alert(response.d);
@@ -182,6 +184,26 @@
                 }
                 
             }
+        });
+
+        $("#syncBtn").click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "SyncTransactions",
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Synced successfully'
+                    }).then(function () {
+                        location.reload();
+                    });
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
         });
     });
 

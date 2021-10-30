@@ -63,7 +63,7 @@ namespace WealthFlow.Controllers
             // Total amount per month
             if(dataType == 1)
             {
-                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Date >= from && o.Date <= to).GroupBy(o => new { Month = o.Date.Month, Year = o.Date.Year }).Select(o => new DashboardDTO { month = o.Key.Month, year = o.Key.Year, amount = o.Sum(x => x.Amount) }).ToList();
+                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Date >= from && o.Date <= to).GroupBy(o => new { Month = o.Date.Month, Year = o.Date.Year }).Select(o => new DashboardDTO { Month = o.Key.Month, Year = o.Key.Year, Amount = o.Sum(x => x.Amount) }).ToList();
 
                 return Json(data);
             }
@@ -71,7 +71,7 @@ namespace WealthFlow.Controllers
             // Total income per month
             else if (dataType == 2)
             {
-                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount > 0 && o.Date >= from && o.Date <= to).GroupBy(o => new { Month = o.Date.Month, Year = o.Date.Year }).Select(o => new DashboardDTO { month = o.Key.Month, year = o.Key.Year, amount = o.Sum(x => x.Amount) }).ToList();
+                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount > 0 && o.Date >= from && o.Date <= to).GroupBy(o => new { Month = o.Date.Month, Year = o.Date.Year }).Select(o => new DashboardDTO { Month = o.Key.Month, Year = o.Key.Year, Amount = o.Sum(x => x.Amount) }).ToList();
 
                 return Json(data);
             }
@@ -79,7 +79,7 @@ namespace WealthFlow.Controllers
             // Total expense per month
             else if(dataType == 3)
             {
-                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount < 0 && o.Date >= from && o.Date <= to).GroupBy(o => new { Month = o.Date.Month, Year = o.Date.Year }).Select(o => new DashboardDTO { month = o.Key.Month, year = o.Key.Year, amount = o.Sum(x => (x.Amount * -1)) }).ToList();
+                List<DashboardDTO> data = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId && o.Amount < 0 && o.Date >= from && o.Date <= to).GroupBy(o => new { Month = o.Date.Month, Year = o.Date.Year }).Select(o => new DashboardDTO { Month = o.Key.Month, Year = o.Key.Year, Amount = o.Sum(x => (x.Amount * -1)) }).ToList();
 
                 return Json(data);
             }

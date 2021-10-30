@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using WealthFlow.Models;
@@ -51,6 +52,10 @@ namespace WealthFlow.Controllers
                 else if (card.Bank.ToLower() == "td")
                 {
                     rows = csv.Split("\r\n").ToList();
+                }
+                else if(card.Bank.ToLower() == "bmo")
+                {
+                    rows = csv.Split("\n").ToList();
                 }
                 foreach (var r in rows)
                 {
@@ -127,7 +132,16 @@ namespace WealthFlow.Controllers
                             merchant = columns[1].Trim();
                             amount = Convert.ToDecimal(columns[3]);
                         }
-
+                    }
+                    else if(card.Bank.ToLower() == "bmo" && card.Type.ToLower() == "debit")
+                    {
+                        if (columns[0] == "")
+                            continue;
+                        else if (columns[0][0] != '\'')
+                            continue;
+                        date = DateTime.ParseExact(columns[2], "yyyyMMdd", CultureInfo.InvariantCulture);
+                        amount = Convert.ToDecimal(columns[3]);
+                        merchant = columns[4].Trim();
                     }
                     // Exclude => skip to next item
                     if (excludeKeywords.Any(o => merchant.ToLower().Contains(o.Name.ToLower())))
@@ -168,6 +182,39 @@ namespace WealthFlow.Controllers
             transaction.CategoryId = categoryId;
             _dbContext.Update(transaction);
             _dbContext.SaveChanges();
+        }
+
+        public void SyncTransactions()
+        {
+            User user = GetCurrentUser();
+
+            List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
+            List<Category> categories = _dbContext.Category.Where(o => o.UserId == user.UserId).ToList();
+            List<Keyword> keywords = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).ToList();
+            List<ExcludeKeyword> excludeKeywords = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).ToList();
+
+            foreach (var t in transactions)
+            {
+                // Exclude => skip to next item
+                if (excludeKeywords.Any(o => t.Merchant.ToLower().Contains(o.Name.ToLower())))
+                {
+                    _dbContext.Transaction.Remove(t);
+                    _dbContext.SaveChanges();
+                }
+                foreach (var k in keywords)
+                {
+                    if (t.Merchant.ToLower().Contains(k.Name.ToLower()))
+                    {
+                        if (t.CategoryId != k.CategoryId)
+                        {
+                            t.CategoryId = k.CategoryId;
+                            _dbContext.Transaction.Update(t);
+                            _dbContext.SaveChanges();
+                        }
+
+                    }
+                }
+            }
         }
 
         [HttpPost]

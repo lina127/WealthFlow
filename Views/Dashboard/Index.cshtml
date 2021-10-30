@@ -4,8 +4,10 @@
 }
 
 <div class="row">
-    <div class="col-12">
+    <div class="col-md-6 vertical-align-center">
         <h1>@ViewData["Title"]</h1>
+    </div>
+    <div class="col-md-6 vertical-align-center">
         <form class="row">
             <div class="form-group col-4">
                 <label for="from">From</label>
@@ -19,14 +21,17 @@
                 <button type="button" class="btn btn-primary" id="updateDate">Update</button>
             </div>
         </form>
+    </div>
+    <div class="col-12">
         <div class="alert alert-danger d-none" role="alert" id="alert-danger"></div>
     </div>
-    <div class="col-md-6">
+    <hr/>
+    <div class="col-md-4">
         <h3>Expense per category</h3>
         <small>Total: $<span id="GetTotalAmountPerCategory_3_total"></span></small>
         <canvas id="GetTotalAmountPerCategory_3_canvas"></canvas>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <h3>Income per category</h3>
         <small>Total: $<span id="GetTotalAmountPerCategory_2_total"></span></small>
         <canvas id="GetTotalAmountPerCategory_2_canvas"></canvas>
@@ -146,8 +151,9 @@
                 success: function (response) {
                     if (response.$values.length > 0) {
                         response = response.$values
+                        console.log(response)
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        total = response.reduce((n, { Amount }) => n + Amount, 0).toFixed(2);
                         $("#GetTotalAmountPerMonth_1_total").html(total);
                         displayTotalPerMonthChart("GetTotalAmountPerMonth_1_canvas", response);
 
@@ -170,7 +176,7 @@
                     if (response.$values.length > 0) {
                         response = response.$values
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        total = response.reduce((n, { Amount }) => n + Amount, 0).toFixed(2);
                         $("#GetTotalAmountPerMonth_2_total").html(total);
                         displayTotalPerMonthChart("GetTotalAmountPerMonth_2_canvas", response);
 
@@ -193,7 +199,7 @@
                     if (response.$values.length > 0) {
                         response = response.$values
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
+                        total = response.reduce((n, { Amount }) => n + Amount, 0).toFixed(2);
                         $("#GetTotalAmountPerMonth_3_total").html(total);
                         displayTotalPerMonthChart("GetTotalAmountPerMonth_3_canvas", response);
 
@@ -259,10 +265,10 @@
             var ctx = canvas.getContext('2d');
 
             var labels = data.map(function (e) {
-                return e.month;
+                return e.Month;
             });
             var data = data.map(function (e) {
-                return e.amount.toFixed(2);
+                return e.Amount.toFixed(2);
             });
             var colors = new Array();
             for (let i = 0; i < data.length; i++) {
@@ -275,7 +281,8 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: ["#58F5E8", "#BC98F5", "#7FF57F", "#F59567", "#F5F073"]
+                        backgroundColor: ["#58F5E8", "#BC98F5", "#7FF57F", "#F59567", "#F5F073"],
+                        borderRadius: 10
                     }]
                 },
                 options: {
@@ -290,6 +297,7 @@
                         }
                     }
                 },
+                
             };
 
             if (chartArray != undefined && chartArray.filter(e => e.id === selector).length > 0) {
