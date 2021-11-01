@@ -84,7 +84,23 @@ namespace WealthFlow.Controllers
                 return Json(data);
             }
             return null;
-            
+        }
+
+        [HttpPost]
+        public JsonResult GetRecentTransactions(int total)
+        {
+            User user = GetCurrentUser();
+            List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).OrderByDescending(o => o.Date).Take(total).ToList();
+            List<DashboardDTO> data = new();
+            foreach(var t in transactions)
+            {
+                DashboardDTO d = new();
+                d.Amount = t.Amount;
+                d.Merchant = t.Merchant;
+                d.Date = t.Date;
+                data.Add(d);
+            }
+            return Json(data);
         }
     }
 }

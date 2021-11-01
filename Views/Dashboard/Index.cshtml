@@ -26,27 +26,40 @@
         <div class="alert alert-danger d-none" role="alert" id="alert-danger"></div>
     </div>
     <hr/>
-    <div class="col-md-4">
+    <div class="col-md-4 p-4">
         <h3>Expense per category</h3>
         <small>Total: $<span id="GetTotalAmountPerCategory_3_total"></span></small>
         <canvas id="GetTotalAmountPerCategory_3_canvas"></canvas>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 p-4">
         <h3>Income per category</h3>
         <small>Total: $<span id="GetTotalAmountPerCategory_2_total"></span></small>
         <canvas id="GetTotalAmountPerCategory_2_canvas"></canvas>
     </div>
+    <div class="col-md-4 p-4">
+        <h3>Recent Transactions</h3>
+        <table id="recentTransaction" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Merchant</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="recentTransactionBody"></tbody>
+        </table>
+    </div>
 
-    <div class="col-md-4">
+    <div class="col-md-4 p-4">
         <h3>Total per month</h3>
         <canvas id="GetTotalAmountPerMonth_1_canvas"></canvas>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-4 p-4">
         <h3>Income per month</h3>
         <canvas id="GetTotalAmountPerMonth_2_canvas"></canvas>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 p-4">
         <h3>Expense per month</h3>
         <canvas id="GetTotalAmountPerMonth_3_canvas"></canvas>
     </div>
@@ -86,6 +99,35 @@
             }
         });
 
+        // Get recent transaction date
+        $.ajax({
+            type: "POST",
+            data: {total : 6},
+            url: "/Dashboard/GetRecentTransactions",
+            success: function (response) {
+                if (response.$values.length > 0) {
+                    response = response.$values;
+                    console.log(response)
+                    let recentTransactionBodyHTML = "";
+                    for (let i = 0; i < response.length; i++) {
+                        let amount = response[i].amount;
+                        let amountHTML = "";
+                        if (amount > 0) {
+                            amountHTML = "<span class='text-success'>$" + amount.toFixed(2) + "</span>";
+                        } else {
+                            amount = amount * -1;
+                            amountHTML = "<span class='text-danger'>$" + amount.toFixed(2) + "</span>";
+                        }
+                        recentTransactionBodyHTML += "<tr><td>" + response[i].date.substring(0, 10) + "</td><td>" + response[i].merchant + "</td><td class='text-right'>" + amountHTML + "</td></tr >";
+                    }
+                    $("#recentTransactionBody").html(recentTransactionBodyHTML);
+                }
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
+        });
+
         // chart variables
         var chartArray = new Array();
 
@@ -106,7 +148,7 @@
                 url: "/Dashboard/GetTotalAmountPerCategory",
                 success: function (response) {
                     if (response.$values.length > 0) {
-                        response = response.$values
+                        response = response.$values;
                         $("#alert-danger").addClass("d-none");
                         total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
                         $("#GetTotalAmountPerCategory_3_total").html(total);
@@ -127,7 +169,7 @@
                 url: "/Dashboard/GetTotalAmountPerCategory",
                 success: function (response) {
                     if (response.$values.length > 0) {
-                        response = response.$values
+                        response = response.$values;
                         $("#alert-danger").addClass("d-none");
                         total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
                         $("#GetTotalAmountPerCategory_2_total").html(total);
@@ -150,10 +192,9 @@
                 url: "/Dashboard/GetTotalAmountPerMonth",
                 success: function (response) {
                     if (response.$values.length > 0) {
-                        response = response.$values
-                        console.log(response)
+                        response = response.$values;
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { Amount }) => n + Amount, 0).toFixed(2);
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
                         $("#GetTotalAmountPerMonth_1_total").html(total);
                         displayTotalPerMonthChart("GetTotalAmountPerMonth_1_canvas", response);
 
@@ -174,9 +215,9 @@
                 url: "/Dashboard/GetTotalAmountPerMonth",
                 success: function (response) {
                     if (response.$values.length > 0) {
-                        response = response.$values
+                        response = response.$values;
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { Amount }) => n + Amount, 0).toFixed(2);
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
                         $("#GetTotalAmountPerMonth_2_total").html(total);
                         displayTotalPerMonthChart("GetTotalAmountPerMonth_2_canvas", response);
 
@@ -197,9 +238,9 @@
                 url: "/Dashboard/GetTotalAmountPerMonth",
                 success: function (response) {
                     if (response.$values.length > 0) {
-                        response = response.$values
+                        response = response.$values;
                         $("#alert-danger").addClass("d-none");
-                        total = response.reduce((n, { Amount }) => n + Amount, 0).toFixed(2);
+                        total = response.reduce((n, { amount }) => n + amount, 0).toFixed(2);
                         $("#GetTotalAmountPerMonth_3_total").html(total);
                         displayTotalPerMonthChart("GetTotalAmountPerMonth_3_canvas", response);
 
@@ -265,10 +306,10 @@
             var ctx = canvas.getContext('2d');
 
             var labels = data.map(function (e) {
-                return e.Month;
+                return e.month;
             });
             var data = data.map(function (e) {
-                return e.Amount.toFixed(2);
+                return e.amount.toFixed(2);
             });
             var colors = new Array();
             for (let i = 0; i < data.length; i++) {
