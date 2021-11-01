@@ -82,7 +82,7 @@ namespace WealthFlow.Controllers
         public void DeleteCard(int cardId)
         {
             Card card = _dbContext.Card.Where(o => o.CardId == cardId).FirstOrDefault();
-            card.Status = "Deavtive";
+            card.Status = "Deactive";
             _dbContext.SaveChanges();
         }
     }

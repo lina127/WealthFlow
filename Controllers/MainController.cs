@@ -21,7 +21,7 @@ namespace WealthFlow.Controllers
         {
             if (IsSessionValid(out User? user))
             {
-                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
+                List<Card> cards = _dbContext.Card.Where(o => o.UserId == user.UserId && o.Status.ToUpper() != "DEACTIVE").ToList();
                 
                 List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
 
@@ -163,7 +163,7 @@ namespace WealthFlow.Controllers
                         }
                     }
 
-                    List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId).ToList();
+                    List<Transaction> transactions = _dbContext.Transaction.Where(o => o.Card.UserId == user.UserId ).ToList();
 
                     if (!transactions.Any(o => o.Date == date && o.Merchant == merchant && o.Amount == amount && o.CardId == cardId))
                     {
@@ -269,7 +269,7 @@ namespace WealthFlow.Controllers
                 List<Keyword> keyword = _dbContext.Keyword.Where(o => o.Category.UserId == user.UserId).OrderBy(o => o.Category.Name).ThenBy(o => o.Name).ToList();
                 List<Category> category = _dbContext.Category.Where(o => o.UserId == user.UserId).OrderBy(o => o.Type).ThenBy(o => o.Name).ToList();
                 List<ExcludeKeyword> excludeKeyword = _dbContext.ExcludeKeyword.Where(o => o.Card.UserId == user.UserId).OrderBy(o => o.Name).ToList();
-                List<Card> card = _dbContext.Card.Where(o => o.UserId == user.UserId).ToList();
+                List<Card> card = _dbContext.Card.Where(o => o.UserId == user.UserId && o.Status.ToUpper() != "DEACTIVE").ToList();
                 DataDTO dataDTO = new DataDTO(keyword, category, card, excludeKeyword);
                 return View(dataDTO);
             }
