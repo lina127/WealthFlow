@@ -192,64 +192,6 @@
             });
         });
 
-        $(".updateKeyword").click(function (e) {
-            e.preventDefault();
-            let keywordId = $(this)[0].parentNode.parentNode.id;
-            let name = $(this).closest('td').siblings().find('input')[0].value;
-
-            if (name == "") {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Empty field found.'
-                });
-                return;
-            }
-
-            let data = { keywordId: keywordId, newName: name };
-
-            $.ajax({
-                type: "POST",
-                url: "RenameKeyword",
-                data: data,
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Keyword has been updated successfully.'
-                    });
-                },
-                failure: function (response) {
-                    alert(response.d);
-                }
-            });
-        });
-
-        $(".deleteKeyword").click(function (e) {
-            e.preventDefault();
-            let keywordId = $(this)[0].parentNode.parentNode.id;
-
-            let data = { keywordId: keywordId };
-
-            $.ajax({
-                type: "POST",
-                url: "DeleteKeyword",
-                data: data,
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Keyword has been deleted successfully.'
-                    }).then(function () {
-                        location.reload();
-                    });
-                },
-                failure: function (response) {
-                    alert(response.d);
-                }
-            });
-        });
-
         $("#showExcludeKeywordFormContainer").click(function (e) {
             e.preventDefault();
             $("#newExcludeKeywordFormContainer").show();
@@ -291,62 +233,108 @@
             });
         });
 
-        $(".updateExcludeKeyword").click(function (e) {
-            e.preventDefault();
-            let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
-            let name = $(this).closest('td').siblings().find('input')[0].value;
+    });
 
-            if (name == "") {
+    $(document).on('click', '.updateKeyword', function (e) {
+        e.preventDefault();
+        let keywordId = $(this)[0].parentNode.parentNode.id;
+        let name = $(this).closest('td').siblings().find('input')[0].value;
+        if (name == "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Empty field found.'
+            });
+            return;
+        }
+        let data = { keywordId: keywordId, newName: name };
+        $.ajax({
+            type: "POST",
+            url: "RenameKeyword",
+            data: data,
+            success: function (response) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Empty field found.'
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Keyword has been updated successfully.'
                 });
-                return;
+            },
+            failure: function (response) {
+                alert(response.d);
             }
-
-            let data = { excludeKeywordId: excludeKeywordId, newName: name };
-
-            $.ajax({
-                type: "POST",
-                url: "RenameExcludeKeyword",
-                data: data,
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Keyword has been updated successfully.'
-                    });
-                },
-                failure: function (response) {
-                    alert(response.d);
-                }
-            });
         });
-
-        $(".deleteExcludeKeyword").click(function (e) {
-            e.preventDefault();
-            let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
-
-            let data = { excludeKeywordId: excludeKeywordId };
-
-            $.ajax({
-                type: "POST",
-                url: "DeleteExcludeKeyword",
-                data: data,
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Exclude keyword has been deleted successfully.'
-                    }).then(function () {
-                        location.reload();
-                    });
-                },
-                failure: function (response) {
-                    alert(response.d);
-                }
+    });
+    $(document).on('click', '.deleteKeyword', function (e) {
+        e.preventDefault();
+        let keywordId = $(this)[0].parentNode.parentNode.id;
+        let data = { keywordId: keywordId };
+        $.ajax({
+            type: "POST",
+            url: "DeleteKeyword",
+            data: data,
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Keyword has been deleted successfully.'
+                }).then(function () {
+                    location.reload();
+                });
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
+        });
+    });
+    $(document).on('click', '.updateExcludeKeyword', function (e) {
+        e.preventDefault();
+        let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
+        let name = $(this).closest('td').siblings().find('input')[0].value;
+        if (name == "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Empty field found.'
             });
+            return;
+        }
+        let data = { excludeKeywordId: excludeKeywordId, newName: name };
+        $.ajax({
+            type: "POST",
+            url: "RenameExcludeKeyword",
+            data: data,
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Keyword has been updated successfully.'
+                });
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
+        });
+    });
+    $(document).on('click', '.deleteExcludeKeyword', function (e) {
+        e.preventDefault();
+        let excludeKeywordId = $(this)[0].parentNode.parentNode.id;
+        let data = { excludeKeywordId: excludeKeywordId };
+        $.ajax({
+            type: "POST",
+            url: "DeleteExcludeKeyword",
+            data: data,
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Exclude keyword has been deleted successfully.'
+                }).then(function () {
+                    location.reload();
+                });
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
         });
     });
 
