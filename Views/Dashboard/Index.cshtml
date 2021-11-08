@@ -26,17 +26,17 @@
         <div class="alert alert-danger d-none" role="alert" id="alert-danger"></div>
     </div>
     <hr/>
-    <div class="col-md-4 p-4">
+    <div class="col-md-4 col-xl-3 p-4">
         <h3>Expense per category</h3>
         <small>Total: $<span id="GetTotalAmountPerCategory_3_total"></span></small>
         <canvas id="GetTotalAmountPerCategory_3_canvas"></canvas>
     </div>
-    <div class="col-md-4 p-4">
+    <div class="col-md-4 col-xl-3 p-4">
         <h3>Income per category</h3>
         <small>Total: $<span id="GetTotalAmountPerCategory_2_total"></span></small>
         <canvas id="GetTotalAmountPerCategory_2_canvas"></canvas>
     </div>
-    <div class="col-md-4 p-4">
+    <div class="col-md-4 col-xl-3 p-4">
         <h3>Recent Transactions</h3>
         <table id="recentTransaction" class="table table-striped">
             <thead>
@@ -50,16 +50,16 @@
         </table>
     </div>
 
-    <div class="col-md-4 p-4">
+    <div class="col-md-4 col-xl-3 p-4">
         <h3>Total per month</h3>
         <canvas id="GetTotalAmountPerMonth_1_canvas"></canvas>
     </div>
 
-    <div class="col-md-4 p-4">
+    <div class="col-md-4 col-xl-3 p-4">
         <h3>Income per month</h3>
         <canvas id="GetTotalAmountPerMonth_2_canvas"></canvas>
     </div>
-    <div class="col-md-4 p-4">
+    <div class="col-md-4 col-xl-3 p-4">
         <h3>Expense per month</h3>
         <canvas id="GetTotalAmountPerMonth_3_canvas"></canvas>
     </div>
@@ -358,5 +358,17 @@
             var b = Math.floor(Math.random() * 255);
             return "rgb(" + r + "," + g + "," + b + ")";
         };
+
+        // Weather API
+        $.ajax({
+            type: "POST",
+            url: "//api.openweathermap.org/data/2.5/weather?q=toronto&appid=e1e3b6f19f77bf0db4d78765299d4a86&units=metric",
+            success: function (response) {
+                console.log(response)
+            },
+            failure: function (response) {
+                alert(response.d);
+            }
+        });
     });
 </script>
